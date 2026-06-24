@@ -62,4 +62,5 @@ Tidak ada layer repository terpisah — service langsung pakai pgxpool/sqlc.
 Setelah phase selesai dan test pass, edit baris `- [ ]` jadi `- [x]` di file ini.
 
 ## Known Issues
-- [ ] **Offline sync write-path unwired** — `enqueue()` di `ManufactPro/Frontend/ManufactPro-UI/src/lib/sync/flush.ts` tidak pernah dipanggil. `flushSyncQueue()` menguras antrian, tapi tidak ada mutation yang mengisi `db.syncQueue`. Akibat: edit saat offline hilang (tidak ter-queue). Fix: panggil `enqueue(op, entity, payload)` di mutation API (`src/lib/api/index.ts`) ketika offline, lalu flush saat `online`.
+- [x] **Offline sync write-path wired** — `syncedWrite()` di `src/lib/sync/mutate.ts` membungkus mutation material/supplier/product di `src/lib/api/index.ts`. Saat offline (atau network gagal mid-request), operasi di-`enqueue()` ke `db.syncQueue` + balikan optimistic; `flushSyncQueue()` (App.svelte on mount + event `online`) yang replay ke `/api/sync`. Read = server-authoritative, jadi id sementara create offline tergantikan id server di `list()` berikutnya.
+  - Catatan: hanya material/supplier/product (entity yang didukung backend `/api/sync`). Stock/production/procurement TIDAK di-queue (butuh transaksi server, bukan target sync). Komponen pola re-fetch (Materials) tetap aman dari data-loss walau list belum refresh saat offline.

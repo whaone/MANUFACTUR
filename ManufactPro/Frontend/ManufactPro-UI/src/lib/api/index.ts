@@ -1,5 +1,6 @@
 import type { Material, Supplier, BomItem, ProductVariant, Product } from '$lib/types'
 import { auth } from '$lib/stores/auth'
+import { syncedWrite } from '$lib/sync/mutate'
 
 const BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:8080'
 
@@ -51,32 +52,50 @@ export const api = {
     list: () => apiFetch<Material[]>('/api/materials'),
     getById: (id: string) => apiFetch<Material>(`/api/materials/${id}`),
     create: (data: Omit<Material, 'id' | 'created_at' | 'updated_at' | 'workspace_id'>) =>
-      apiFetch<Material>('/api/materials', { method: 'POST', body: JSON.stringify(data) }),
+      syncedWrite<Material>('material', 'create', { ...data },
+        () => apiFetch<Material>('/api/materials', { method: 'POST', body: JSON.stringify(data) }),
+        () => ({ ...data, id: crypto.randomUUID() }) as Material),
     update: (id: string, data: Partial<Material>) =>
-      apiFetch<Material>(`/api/materials/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+      syncedWrite<Material>('material', 'update', { id, ...data },
+        () => apiFetch<Material>(`/api/materials/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+        () => ({ id, ...data }) as Material),
     delete: (id: string) =>
-      apiFetch<void>(`/api/materials/${id}`, { method: 'DELETE' }),
+      syncedWrite<void>('material', 'delete', { id },
+        () => apiFetch<void>(`/api/materials/${id}`, { method: 'DELETE' }),
+        () => undefined as void),
   },
 
   suppliers: {
     list: () => apiFetch<Supplier[]>('/api/suppliers'),
     create: (data: Omit<Supplier, 'id' | 'workspace_id'>) =>
-      apiFetch<Supplier>('/api/suppliers', { method: 'POST', body: JSON.stringify(data) }),
+      syncedWrite<Supplier>('supplier', 'create', { ...data },
+        () => apiFetch<Supplier>('/api/suppliers', { method: 'POST', body: JSON.stringify(data) }),
+        () => ({ ...data, id: crypto.randomUUID() }) as Supplier),
     update: (id: string, data: Partial<Supplier>) =>
-      apiFetch<Supplier>(`/api/suppliers/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+      syncedWrite<Supplier>('supplier', 'update', { id, ...data },
+        () => apiFetch<Supplier>(`/api/suppliers/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+        () => ({ id, ...data }) as Supplier),
     delete: (id: string) =>
-      apiFetch<void>(`/api/suppliers/${id}`, { method: 'DELETE' }),
+      syncedWrite<void>('supplier', 'delete', { id },
+        () => apiFetch<void>(`/api/suppliers/${id}`, { method: 'DELETE' }),
+        () => undefined as void),
   },
 
   products: {
     list: () => apiFetch<Product[]>('/api/products'),
     getById: (id: string) => apiFetch<Product>(`/api/products/${id}`),
     create: (data: Omit<Product, 'id' | 'created_at' | 'updated_at' | 'workspace_id' | 'variants'>) =>
-      apiFetch<Product>('/api/products', { method: 'POST', body: JSON.stringify(data) }),
+      syncedWrite<Product>('product', 'create', { ...data },
+        () => apiFetch<Product>('/api/products', { method: 'POST', body: JSON.stringify(data) }),
+        () => ({ ...data, id: crypto.randomUUID() }) as Product),
     update: (id: string, data: Partial<Product>) =>
-      apiFetch<Product>(`/api/products/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+      syncedWrite<Product>('product', 'update', { id, ...data },
+        () => apiFetch<Product>(`/api/products/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+        () => ({ id, ...data }) as Product),
     delete: (id: string) =>
-      apiFetch<void>(`/api/products/${id}`, { method: 'DELETE' }),
+      syncedWrite<void>('product', 'delete', { id },
+        () => apiFetch<void>(`/api/products/${id}`, { method: 'DELETE' }),
+        () => undefined as void),
   },
 
   productVariants: {
