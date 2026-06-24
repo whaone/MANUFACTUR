@@ -158,8 +158,8 @@
 <Modal open={showWarehouseForm} title="Tambah Gudang" onclose={() => showWarehouseForm = false}>
   <div class="space-y-4 p-1">
     <div class="space-y-1.5">
-      <label class="text-sm font-medium text-on-surface">Cabang</label>
-      <select bind:value={warehouseForm.branch_id}
+      <label for="wh-branch" class="text-sm font-medium text-on-surface">Cabang</label>
+      <select id="wh-branch" bind:value={warehouseForm.branch_id}
         class="w-full rounded-xl border border-outline-variant bg-surface-container-lowest px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40">
         <option value="">Pilih cabang...</option>
         {#each branches as b}

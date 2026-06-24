@@ -26,6 +26,7 @@
   } from 'chart.js'
   import { api } from '$lib/api'
   import { onMount } from 'svelte'
+  import { formatDate, colorForBar, barWidth } from '$lib/utils/reports'
 
   Chart.register(
     CategoryScale, LinearScale, BarElement, LineElement,
@@ -127,10 +128,11 @@
   }
 
   // Kategori doughnut — derived from marginData grouped by product_name
+  let categoryNames = $derived([...new Set(marginData.map(d => d.product_name))])
   let categoryChartData = $derived({
-    labels: [...new Set(marginData.map(d => d.product_name))],
+    labels: categoryNames,
     datasets: [{
-      data: [...new Set(marginData.map(d => d.product_name))].map(name =>
+      data: categoryNames.map(name =>
         marginData.filter(d => d.product_name === name).reduce((s, d) => s + d.qty_produced, 0)
       ),
       backgroundColor: CHART_COLORS,
@@ -149,13 +151,6 @@
       : endDate ? `Until ${formatDate(endDate)}`
       : 'Pick a date range'
   )
-
-  function formatDate(d: string) {
-    if (!d) return ''
-    const parts = d.split('-')
-    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
-    return `${parseInt(parts[2])} ${months[parseInt(parts[1]) - 1]} ${parts[0]}`
-  }
 
   function toggleDatePicker() { showDatePicker = !showDatePicker }
 
@@ -191,17 +186,6 @@
   let totalHpp = $derived(filteredMargin.reduce((a, i) => a + i.hpp_per_unit * i.qty_produced, 0))
   let totalMargin = $derived(filteredMargin.reduce((a, i) => a + i.margin * i.qty_produced, 0))
   let avgMarginPct = $derived(totalRevenue > 0 ? (totalMargin / totalRevenue * 100).toFixed(1) : '0')
-
-  function colorForBar(marginPct: number) {
-    if (marginPct >= 45) return 'bg-status-success'
-    if (marginPct >= 35) return 'bg-primary'
-    if (marginPct >= 20) return 'bg-status-warning'
-    return 'bg-status-critical'
-  }
-
-  function barWidth(marginPct: number) {
-    return Math.min(100, Math.max(15, marginPct * 5))
-  }
 </script>
 
 <svelte:window onclick={handleClickOutside} />

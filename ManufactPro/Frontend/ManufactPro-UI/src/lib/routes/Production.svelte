@@ -19,7 +19,13 @@
     CheckCircle,
     XCircle,
   } from '@lucide/svelte'
-  import type { ProductionStatus as Status, BadgeVariant } from '$lib/types'
+  import type { ProductionStatus as Status, BadgeVariant, BomItem, ProductVariant, Warehouse } from '$lib/types'
+
+  // Variant list endpoint joins the parent product name onto each row.
+  type VariantWithProduct = ProductVariant & { product_name?: string }
+
+  // BOM list rows carry joined material display fields beyond BomItem.
+  type BomCheckRow = BomItem & { material_name?: string; material_sku?: string }
 
   interface ProdOrder {
     id: string
@@ -50,11 +56,11 @@
         api.warehouses.list(),
       ])
       orders = ordersData
-      variantOptions = variantsData.map((v: any) => ({
+      variantOptions = (variantsData as VariantWithProduct[]).map((v) => ({
         value: v.id,
         label: `${v.product_name ?? ''} — ${v.sku}`,
       }))
-      warehouseOptions = warehousesData.map((w: any) => ({
+      warehouseOptions = (warehousesData as Warehouse[]).map((w) => ({
         value: w.id,
         label: w.name,
       }))
@@ -127,7 +133,7 @@
     }
     const stock = await api.stock.list()
     const warnings: string[] = []
-    for (const b of bom as any[]) {
+    for (const b of bom as BomCheckRow[]) {
       const onHand = stock
         .filter((s) => s.item_type === 'material' && s.item_id === b.material_id && s.warehouse_id === order.warehouse_id)
         .reduce((a, s) => a + s.qty_on_hand, 0)

@@ -9,6 +9,13 @@
   import { api } from '$lib/api'
   import { toast } from '$lib/stores/toast'
   import {
+    type AttrRow,
+    type Dimension,
+    getCategoryPreset,
+    generateCombos,
+    buildSku,
+  } from '$lib/utils/variants'
+  import {
     Search,
     Plus,
     Boxes,
@@ -43,12 +50,12 @@
   onMount(async () => {
     try {
       const data = await api.products.list()
-      products = data.map((p: any) => ({
+      products = data.map((p) => ({
         id: p.id,
         name: p.name,
         category: p.category ?? '',
         description: p.description ?? '',
-        variants: (p.variants ?? []).map((v: any) => ({
+        variants: (p.variants ?? []).map((v) => ({
           id: v.id,
           sku: v.sku,
           barcode: v.barcode ?? '',
@@ -73,28 +80,6 @@
     products.filter((p) => !search || p.name.toLowerCase().includes(search.toLowerCase()))
   )
 
-  type AttrRow = { key: string; value: string }
-
-  const CATEGORY_PRESETS: Record<string, AttrRow[]> = {
-    pakaian:   [{ key: 'Ukuran', value: '' }, { key: 'Warna', value: '' }],
-    tekstil:   [{ key: 'Ukuran', value: '' }, { key: 'Warna', value: '' }],
-    clothing:  [{ key: 'Ukuran', value: '' }, { key: 'Warna', value: '' }],
-    makanan:   [{ key: 'Rasa', value: '' }, { key: 'Ukuran Porsi', value: '' }],
-    food:      [{ key: 'Rasa', value: '' }, { key: 'Ukuran Porsi', value: '' }],
-    'f&b':     [{ key: 'Rasa', value: '' }, { key: 'Ukuran Porsi', value: '' }],
-    minuman:   [{ key: 'Rasa', value: '' }, { key: 'Volume (ml)', value: '' }],
-    beverage:  [{ key: 'Rasa', value: '' }, { key: 'Volume (ml)', value: '' }],
-    elektronik:[{ key: 'Warna', value: '' }, { key: 'Kapasitas', value: '' }],
-  }
-
-  function getCategoryPreset(cat: string): AttrRow[] {
-    const lower = cat.toLowerCase()
-    for (const [key, rows] of Object.entries(CATEGORY_PRESETS)) {
-      if (lower.includes(key)) return rows.map(r => ({ ...r }))
-    }
-    return [{ key: '', value: '' }]
-  }
-
   let showVariantForm = $state(false)
   let variantFormData = $state({ sku: '', barcode: '', price: 0, status: 'Active' })
   let attrRows = $state<AttrRow[]>([])
@@ -105,24 +90,6 @@
   function removeAttrRow(i: number) { attrRows = attrRows.filter((_, idx) => idx !== i) }
 
   // --- Matrix Generator ---
-  type Dimension = { key: string; values: string[]; inputVal: string }
-
-  function generateCombos(dims: Dimension[]): Record<string, string>[] {
-    const valid = dims.filter(d => d.key.trim() && d.values.length > 0)
-    if (valid.length === 0) return []
-    const [first, ...rest] = valid
-    const restCombos = rest.length > 0 ? generateCombos(rest) : [{}]
-    return first.values.flatMap(v =>
-      restCombos.map(combo => ({ [first.key.trim()]: v, ...combo }))
-    )
-  }
-
-  function buildSku(productName: string, attrs: Record<string, string>): string {
-    const prefix = productName.replace(/\s+/g, '').slice(0, 3).toUpperCase()
-    const parts = Object.values(attrs).map(v => v.replace(/\s+/g, '').slice(0, 3).toUpperCase())
-    return [prefix, ...parts].join('-')
-  }
-
   let showMatrixForm = $state(false)
   let dimensions = $state<Dimension[]>([])
   let matrixBasePrice = $state(0)
@@ -184,15 +151,18 @@
         // skip on duplicate SKU — user edit manual after generate
       }
     }
-    products = products.map(p =>
-      p.id === activeProductId ? { ...p, variants: [...p.variants, ...created] } : p
-    )
+    updateProduct(activeProductId, (p) => ({ ...p, variants: [...p.variants, ...created] }))
     matrixGenerating = false
     showMatrixForm = false
   }
 
+  // Immutably replace one product by id, applying `updater` to produce its new value.
+  function updateProduct(id: string, updater: (p: ProductItem) => ProductItem) {
+    products = products.map((p) => p.id === id ? updater(p) : p)
+  }
+
   function toggleExpand(id: string) {
-    products = products.map((p) => p.id === id ? { ...p, expanded: !p.expanded } : p)
+    updateProduct(id, (p) => ({ ...p, expanded: !p.expanded }))
   }
 
   async function handleSave() {
@@ -235,46 +205,23 @@
     attrRows.filter(r => r.key.trim() && r.value.trim())
       .forEach(r => { attrs[r.key.trim()] = r.value.trim() })
 
-    const is_active = variantFormData.status === 'Active'
-    
+    const payload = {
+      sku: variantFormData.sku,
+      barcode: variantFormData.barcode,
+      sell_price: variantFormData.price,
+      is_active: variantFormData.status === 'Active',
+      attributes: attrs,
+    }
+
     if (editingVariantId) {
-      const updatedData = {
-        sku: variantFormData.sku,
-        barcode: variantFormData.barcode,
-        sell_price: variantFormData.price,
-        is_active,
-        attributes: attrs
-      }
-      await api.productVariants.update(editingVariantId, updatedData)
-      
-      products = products.map(p => {
-        if (p.id === activeProductId) {
-          return {
-            ...p,
-            variants: p.variants.map(v => v.id === editingVariantId ? { ...v, ...updatedData } : v)
-          }
-        }
-        return p
-      })
+      await api.productVariants.update(editingVariantId, payload)
+      updateProduct(activeProductId, (p) => ({
+        ...p,
+        variants: p.variants.map(v => v.id === editingVariantId ? { ...v, ...payload } : v),
+      }))
     } else {
-      const newData = {
-        sku: variantFormData.sku,
-        barcode: variantFormData.barcode,
-        sell_price: variantFormData.price,
-        is_active,
-        attributes: attrs
-      }
-      const newVariant = await api.productVariants.create(activeProductId, newData)
-      
-      products = products.map(p => {
-        if (p.id === activeProductId) {
-          return {
-            ...p,
-            variants: [...p.variants, newVariant]
-          }
-        }
-        return p
-      })
+      const newVariant = await api.productVariants.create(activeProductId, payload)
+      updateProduct(activeProductId, (p) => ({ ...p, variants: [...p.variants, newVariant] }))
     }
     showVariantForm = false
   }
@@ -282,15 +229,10 @@
   async function handleDeleteVariant(productId: string, variantId: string) {
     if (!confirm('Are you sure you want to delete this variant?')) return
     await api.productVariants.delete(variantId)
-    products = products.map(p => {
-      if (p.id === productId) {
-        return {
-          ...p,
-          variants: p.variants.filter(v => v.id !== variantId)
-        }
-      }
-      return p
-    })
+    updateProduct(productId, (p) => ({
+      ...p,
+      variants: p.variants.filter(v => v.id !== variantId),
+    }))
   }
 
   async function handleDeleteProduct(productId: string, name: string) {

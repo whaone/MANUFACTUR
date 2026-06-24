@@ -8,6 +8,7 @@
   import { api } from '$lib/api'
   import { toast } from '$lib/stores/toast'
   import type { Material, ProductVariant, BomItem } from '$lib/types'
+  import { buildBomRecipes, type BomRecipe } from '$lib/utils/bom'
   import {
     ClipboardList,
     ChevronRight,
@@ -19,14 +20,6 @@
     X,
   } from '@lucide/svelte'
   import { onMount } from 'svelte'
-
-  interface BomRecipe {
-    variantId: string
-    variant: string
-    product: string
-    items: { id: string; materialId: string; material: string; qty: number; unit: string; optional: boolean }[]
-    totalMaterials: number
-  }
 
   interface MaterialRow {
     id: string
@@ -68,32 +61,20 @@
   })
 
   async function loadData() {
-    materials = await api.materials.list()
-    variants = await api.productVariants.list()
-    
-    const bomMap = new Map<string, BomRecipe>()
-    for (const variant of variants) {
-      const items = await api.bomItems.listByVariant(variant.id)
-      const mappedItems = items.map(item => {
-        const mat = materials.find(m => m.id === item.material_id)
-        return {
-          id: item.id,
-          materialId: item.material_id,
-          material: mat?.name || 'Unknown',
-          qty: item.qty,
-          unit: item.unit,
-          optional: item.is_optional
-        }
-      })
-      bomMap.set(variant.id, {
-        variantId: variant.id,
-        variant: variant.sku,
-        product: variant.sku,
-        items: mappedItems,
-        totalMaterials: mappedItems.length
-      })
-    }
-    boms = Array.from(bomMap.values())
+    const [materialsData, variantsData] = await Promise.all([
+      api.materials.list(),
+      api.productVariants.list(),
+    ])
+    materials = materialsData
+    variants = variantsData
+
+    // Fetch every variant's BOM items in parallel — avoids the N+1 request
+    // waterfall of awaiting each variant sequentially.
+    const itemsByVariant = await Promise.all(
+      variants.map(variant => api.bomItems.listByVariant(variant.id))
+    )
+
+    boms = buildBomRecipes(variants, materials, itemsByVariant)
   }
 
   function addMaterialRow() {
@@ -147,11 +128,10 @@
     try {
       await api.bomItems.delete(itemId)
       // Hapus dari state lokal langsung — tidak tergantung reload penuh (yang bisa lambat/gagal).
-      boms = boms.map(b => ({
-        ...b,
-        items: b.items.filter(it => it.id !== itemId),
-        totalMaterials: b.items.filter(it => it.id !== itemId).length,
-      }))
+      boms = boms.map(b => {
+        const items = b.items.filter(it => it.id !== itemId)
+        return { ...b, items, totalMaterials: items.length }
+      })
       toast.success('Item BOM dihapus')
     } catch (e) {
       toast.error('Gagal menghapus item BOM', e instanceof Error ? e.message : 'error')

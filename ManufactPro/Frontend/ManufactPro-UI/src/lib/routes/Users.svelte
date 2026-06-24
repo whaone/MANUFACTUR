@@ -238,8 +238,8 @@
     <Input label="Email" type="email" bind:value={inviteForm.email} placeholder="email@domain.com" />
     <Input label="Password" type="password" bind:value={inviteForm.password} placeholder="Min. 6 karakter" />
     <div class="space-y-1.5">
-      <label class="text-sm font-medium text-on-surface">Role</label>
-      <select bind:value={inviteForm.role}
+      <label for="user-role" class="text-sm font-medium text-on-surface">Role</label>
+      <select id="user-role" bind:value={inviteForm.role}
         class="w-full rounded-xl border border-outline-variant bg-surface-container-lowest px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40">
         {#each ROLES as role}
           <option value={role}>{role}</option>

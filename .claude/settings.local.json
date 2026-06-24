@@ -8,7 +8,9 @@
       "Bash(npm run *)",
       "Bash(awk '/^phase3\\\\\\(\\\\\\)/,/^}/' scripts/test_phases.sh)",
       "Bash(/home/whaone17/go/bin/go run *)",
-      "Bash(go version *)"
+      "Bash(go version *)",
+      "Read(//home/whaone17/**)",
+      "Bash(git config *)"
     ]
   }
 }
