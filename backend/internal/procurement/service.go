@@ -11,27 +11,27 @@ import (
 )
 
 type PO struct {
-	ID          uuid.UUID  `json:"id"`
-	SupplierID  uuid.UUID  `json:"supplier_id"`
-	SupplierName string    `json:"supplier_name"`
-	WarehouseID uuid.UUID  `json:"warehouse_id"`
-	WarehouseName string   `json:"warehouse_name"`
-	PONumber    string     `json:"po_number"`
-	Status      string     `json:"status"`
-	TotalAmount float64    `json:"total_amount"`
-	OrderedAt   time.Time  `json:"ordered_at"`
-	ExpectedAt  *time.Time `json:"expected_at,omitempty"`
-	ItemCount   int        `json:"item_count"`
+	ID            uuid.UUID  `json:"id"`
+	SupplierID    uuid.UUID  `json:"supplier_id"`
+	SupplierName  string     `json:"supplier_name"`
+	WarehouseID   uuid.UUID  `json:"warehouse_id"`
+	WarehouseName string     `json:"warehouse_name"`
+	PONumber      string     `json:"po_number"`
+	Status        string     `json:"status"`
+	TotalAmount   float64    `json:"total_amount"`
+	OrderedAt     time.Time  `json:"ordered_at"`
+	ExpectedAt    *time.Time `json:"expected_at,omitempty"`
+	ItemCount     int        `json:"item_count"`
 }
 
 type POItem struct {
-	ID          uuid.UUID `json:"id"`
-	MaterialID  uuid.UUID `json:"material_id"`
-	MaterialName string   `json:"material_name"`
-	MaterialSKU  string   `json:"material_sku"`
-	QtyOrdered  float64   `json:"qty_ordered"`
-	QtyReceived float64   `json:"qty_received"`
-	UnitPrice   float64   `json:"unit_price"`
+	ID           uuid.UUID `json:"id"`
+	MaterialID   uuid.UUID `json:"material_id"`
+	MaterialName string    `json:"material_name"`
+	MaterialSKU  string    `json:"material_sku"`
+	QtyOrdered   float64   `json:"qty_ordered"`
+	QtyReceived  float64   `json:"qty_received"`
+	UnitPrice    float64   `json:"unit_price"`
 }
 
 type PODetail struct {
@@ -40,11 +40,11 @@ type PODetail struct {
 }
 
 type CreateInput struct {
-	SupplierID  uuid.UUID     `json:"supplier_id"`
-	WarehouseID uuid.UUID     `json:"warehouse_id"`
-	PONumber    string        `json:"po_number"`
-	ExpectedAt  *time.Time    `json:"expected_at"`
-	Items       []ItemInput   `json:"items"`
+	SupplierID  uuid.UUID   `json:"supplier_id"`
+	WarehouseID uuid.UUID   `json:"warehouse_id"`
+	PONumber    string      `json:"po_number"`
+	ExpectedAt  *time.Time  `json:"expected_at"`
+	Items       []ItemInput `json:"items"`
 }
 
 type ItemInput struct {
@@ -54,7 +54,7 @@ type ItemInput struct {
 }
 
 type ReceiveInput struct {
-	Note  string            `json:"note"`
+	Note  string             `json:"note"`
 	Items []ReceiveItemInput `json:"items"`
 }
 
@@ -99,6 +99,31 @@ func List(ctx context.Context, workspaceID uuid.UUID) ([]PO, error) {
 		list = []PO{}
 	}
 	return list, nil
+}
+
+// getPO fetches a single PO summary row (joined supplier/warehouse + item count).
+// Avoids re-listing every PO just to return one after a status change.
+func getPO(ctx context.Context, workspaceID, id uuid.UUID) (*PO, error) {
+	var p PO
+	err := db.Pool.QueryRow(ctx, `
+		SELECT po.id, po.supplier_id, s.name, po.warehouse_id, w.name,
+		       po.po_number, po.status::text, po.total_amount,
+		       po.ordered_at, po.expected_at,
+		       (SELECT COUNT(*) FROM po_items pi WHERE pi.po_id = po.id)
+		FROM purchase_orders po
+		JOIN suppliers s  ON s.id = po.supplier_id
+		JOIN warehouses w ON w.id = po.warehouse_id
+		WHERE po.workspace_id = $1 AND po.id = $2`,
+		workspaceID, id,
+	).Scan(
+		&p.ID, &p.SupplierID, &p.SupplierName, &p.WarehouseID, &p.WarehouseName,
+		&p.PONumber, &p.Status, &p.TotalAmount,
+		&p.OrderedAt, &p.ExpectedAt, &p.ItemCount,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("get po: %w", err)
+	}
+	return &p, nil
 }
 
 func GetDetail(ctx context.Context, workspaceID, id uuid.UUID) (*PODetail, error) {
@@ -209,17 +234,7 @@ func Send(ctx context.Context, workspaceID, id uuid.UUID) (*PO, error) {
 	if err != nil || tag.RowsAffected() == 0 {
 		return nil, fmt.Errorf("po not found or not in draft status")
 	}
-	list, err := List(ctx, workspaceID)
-	if err != nil {
-		return nil, err
-	}
-	for _, p := range list {
-		if p.ID == id {
-			p2 := p
-			return &p2, nil
-		}
-	}
-	return nil, fmt.Errorf("po not found after update")
+	return getPO(ctx, workspaceID, id)
 }
 
 func Cancel(ctx context.Context, workspaceID, id uuid.UUID) (*PO, error) {
@@ -231,14 +246,7 @@ func Cancel(ctx context.Context, workspaceID, id uuid.UUID) (*PO, error) {
 	if err != nil || tag.RowsAffected() == 0 {
 		return nil, fmt.Errorf("po not found or cannot be cancelled")
 	}
-	list, _ := List(ctx, workspaceID)
-	for _, p := range list {
-		if p.ID == id {
-			p2 := p
-			return &p2, nil
-		}
-	}
-	return nil, nil
+	return getPO(ctx, workspaceID, id)
 }
 
 // Receive creates a goods receipt, inserts material_batches + stock_movements IN_PURCHASE,

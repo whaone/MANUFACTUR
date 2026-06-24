@@ -58,11 +58,11 @@ type CreateVariantInput struct {
 }
 
 type UpdateVariantInput struct {
-	SKU        *string            `json:"sku"`
-	Barcode    *string            `json:"barcode"`
-	Attributes map[string]string  `json:"attributes"`
-	SellPrice  *float64           `json:"sell_price"`
-	IsActive   *bool              `json:"is_active"`
+	SKU        *string           `json:"sku"`
+	Barcode    *string           `json:"barcode"`
+	Attributes map[string]string `json:"attributes"`
+	SellPrice  *float64          `json:"sell_price"`
+	IsActive   *bool             `json:"is_active"`
 }
 
 func scanVariant(row pgx.Row) (*Variant, error) {
@@ -124,11 +124,27 @@ func List(ctx context.Context, workspaceID uuid.UUID) ([]Product, error) {
 		if err := rows.Scan(&p.ID, &p.WorkspaceID, &p.Name, &p.Category, &p.Description, &p.ImageURL, &p.CreatedAt, &p.UpdatedAt); err != nil {
 			return nil, err
 		}
-		p.Variants, _ = listVariants(ctx, p.ID)
 		list = append(list, p)
 	}
 	if list == nil {
-		list = []Product{}
+		return []Product{}, nil
+	}
+
+	// Attach variants without an N+1: fetch them all in one query, group by product.
+	variants, err := ListVariantsFlat(ctx, workspaceID)
+	if err != nil {
+		return nil, err
+	}
+	byProduct := make(map[uuid.UUID][]Variant, len(list))
+	for _, v := range variants {
+		byProduct[v.ProductID] = append(byProduct[v.ProductID], v)
+	}
+	for i := range list {
+		if vs := byProduct[list[i].ID]; vs != nil {
+			list[i].Variants = vs
+		} else {
+			list[i].Variants = []Variant{}
+		}
 	}
 	return list, nil
 }
@@ -166,10 +182,18 @@ func Update(ctx context.Context, workspaceID, id uuid.UUID, in UpdateProductInpu
 	if err != nil {
 		return nil, err
 	}
-	if in.Name != nil { cur.Name = *in.Name }
-	if in.Category != nil { cur.Category = *in.Category }
-	if in.Description != nil { cur.Description = *in.Description }
-	if in.ImageURL != nil { cur.ImageURL = *in.ImageURL }
+	if in.Name != nil {
+		cur.Name = *in.Name
+	}
+	if in.Category != nil {
+		cur.Category = *in.Category
+	}
+	if in.Description != nil {
+		cur.Description = *in.Description
+	}
+	if in.ImageURL != nil {
+		cur.ImageURL = *in.ImageURL
+	}
 
 	var p Product
 	err = db.Pool.QueryRow(ctx,
@@ -284,11 +308,21 @@ func UpdateVariant(ctx context.Context, workspaceID, productID, variantID uuid.U
 	}
 	json.Unmarshal(attrsJSON, &v.Attributes)
 
-	if in.SKU != nil { v.SKU = *in.SKU }
-	if in.Barcode != nil { v.Barcode = *in.Barcode }
-	if in.SellPrice != nil { v.SellPrice = *in.SellPrice }
-	if in.IsActive != nil { v.IsActive = *in.IsActive }
-	if in.Attributes != nil { v.Attributes = in.Attributes }
+	if in.SKU != nil {
+		v.SKU = *in.SKU
+	}
+	if in.Barcode != nil {
+		v.Barcode = *in.Barcode
+	}
+	if in.SellPrice != nil {
+		v.SellPrice = *in.SellPrice
+	}
+	if in.IsActive != nil {
+		v.IsActive = *in.IsActive
+	}
+	if in.Attributes != nil {
+		v.Attributes = in.Attributes
+	}
 
 	newAttrs, _ := json.Marshal(v.Attributes)
 	return scanVariant(db.Pool.QueryRow(ctx,
@@ -321,11 +355,21 @@ func UpdateVariantByID(ctx context.Context, workspaceID, variantID uuid.UUID, in
 	}
 	json.Unmarshal(attrsJSON, &v.Attributes)
 
-	if in.SKU != nil { v.SKU = *in.SKU }
-	if in.Barcode != nil { v.Barcode = *in.Barcode }
-	if in.SellPrice != nil { v.SellPrice = *in.SellPrice }
-	if in.IsActive != nil { v.IsActive = *in.IsActive }
-	if in.Attributes != nil { v.Attributes = in.Attributes }
+	if in.SKU != nil {
+		v.SKU = *in.SKU
+	}
+	if in.Barcode != nil {
+		v.Barcode = *in.Barcode
+	}
+	if in.SellPrice != nil {
+		v.SellPrice = *in.SellPrice
+	}
+	if in.IsActive != nil {
+		v.IsActive = *in.IsActive
+	}
+	if in.Attributes != nil {
+		v.Attributes = in.Attributes
+	}
 
 	newAttrs, _ := json.Marshal(v.Attributes)
 	return scanVariant(db.Pool.QueryRow(ctx,
