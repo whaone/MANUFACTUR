@@ -1,16 +1,18 @@
 # ManufactPro
 
+[![CI](https://github.com/whaone/MANUFACTUR/actions/workflows/ci.yml/badge.svg)](https://github.com/whaone/MANUFACTUR/actions/workflows/ci.yml)
+
 Aplikasi manajemen manufaktur (PWA) untuk UKM: kelola material, produk + varian, resep (BOM), stok multi-gudang, pembelian (procurement), produksi dengan HPP metode FIFO, dan laporan. Mendukung mode offline (antrian sync).
 
-- **Backend:** Go 1.23 + chi v5 + pgx/v5 + PostgreSQL, JWT auth.
+- **Backend:** Go 1.25 + chi v5 + pgx/v5 + PostgreSQL, JWT auth.
 - **Frontend:** Svelte 5 + Vite + TailwindCSS.
 
 ---
 
 ## 1. Prasyarat
 
-- Go 1.23+
-- Node.js 18+ & npm
+- Go 1.25+
+- Node.js 22+ & npm
 - PostgreSQL (default dipakai port **5434**)
 
 ---
