@@ -7,6 +7,7 @@
   import { UserCog, Plus, Trash2, Check, X } from '@lucide/svelte'
   import { api } from '$lib/api'
   import { toast } from '$lib/stores/toast'
+  import type { UserView } from '$lib/types/views'
 
   const ROLES = ['owner', 'admin', 'production', 'warehouse', 'viewer'] as const
   type Role = typeof ROLES[number]
@@ -28,15 +29,7 @@
     { label: 'Export Reports', key: 'reports_export', roles: ['owner', 'admin'] },
   ]
 
-  interface User {
-    id: string
-    name: string
-    email: string
-    role: Role
-    created_at: string
-  }
-
-  let users = $state<User[]>([])
+  let users = $state<UserView[]>([])
   let loading = $state(true)
   let saving = $state<string | null>(null)
   let showInvite = $state(false)
@@ -92,8 +85,8 @@
       showInvite = false
       inviteForm = { name: '', email: '', role: 'viewer', password: '' }
       toast.success('User ditambahkan', u.name)
-    } catch (e: any) {
-      inviteError = e?.message ?? 'Gagal menambah user'
+    } catch (e) {
+      inviteError = e instanceof Error ? e.message : 'Gagal menambah user'
       toast.error('Gagal menambah user', inviteError)
     } finally {
       inviting = false

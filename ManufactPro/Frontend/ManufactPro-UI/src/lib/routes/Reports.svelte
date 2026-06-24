@@ -27,42 +27,19 @@
   import { api } from '$lib/api'
   import { onMount } from 'svelte'
   import { formatDate, colorForBar, barWidth } from '$lib/utils/reports'
+  import { formatNumber, formatRupiah } from '$lib/utils/format'
+  import type { HppMarginItem, DashboardReport, ProductionTrendItem } from '$lib/types/views'
 
   Chart.register(
     CategoryScale, LinearScale, BarElement, LineElement,
     PointElement, ArcElement, Title, Tooltip, Legend, Filler
   )
 
-  interface MarginItem {
-    variant_sku: string
-    product_name: string
-    hpp_per_unit: number
-    sell_price: number
-    margin: number
-    margin_pct: number
-    qty_produced: number
-    total_cost: number
-  }
-
-  interface DashboardData {
-    completed_orders: number
-    total_qty_produced: number
-    received_pos: number
-    stock_value: number
-    material_cost_month: number
-  }
-
-  interface TrendItem {
-    month: string
-    qty_produced: number
-    order_count: number
-  }
-
-  let marginData = $state<MarginItem[]>([])
-  let dashboard = $state<DashboardData>({
+  let marginData = $state<HppMarginItem[]>([])
+  let dashboard = $state<DashboardReport>({
     completed_orders: 0, total_qty_produced: 0, received_pos: 0, stock_value: 0, material_cost_month: 0,
   })
-  let trendItems = $state<TrendItem[]>([])
+  let trendItems = $state<ProductionTrendItem[]>([])
   let loading = $state(true)
 
   onMount(async () => {
@@ -351,7 +328,7 @@
                   <span class="text-xs text-on-surface-variant">({item.qty_produced} diproduksi)</span>
                 </div>
                 <div class="text-right">
-                  <span class="font-semibold text-on-surface">Rp {item.margin.toLocaleString('id-ID')}</span>
+                  <span class="font-semibold text-on-surface">{formatRupiah(item.margin)}</span>
                   <span class="text-xs text-on-surface-variant ml-1">{item.margin_pct.toFixed(1)}%</span>
                 </div>
               </div>
@@ -362,8 +339,8 @@
                 ></div>
               </div>
               <div class="flex justify-between text-xs text-outline">
-                <span>HPP: Rp {item.hpp_per_unit.toLocaleString('id-ID')}</span>
-                <span>Sell: Rp {item.sell_price.toLocaleString('id-ID')}</span>
+                <span>HPP: {formatRupiah(item.hpp_per_unit)}</span>
+                <span>Sell: {formatRupiah(item.sell_price)}</span>
               </div>
             </div>
           {/each}
@@ -381,7 +358,7 @@
           </div>
           <div class="flex items-center justify-between">
             <span class="text-sm text-on-surface-variant">Total Qty Produksi</span>
-            <span class="font-bold text-on-surface">{dashboard.total_qty_produced.toLocaleString('id-ID')}</span>
+            <span class="font-bold text-on-surface">{formatNumber(dashboard.total_qty_produced)}</span>
           </div>
           <div class="flex items-center justify-between">
             <span class="text-sm text-on-surface-variant">PO Diterima</span>

@@ -7,12 +7,10 @@
   import { Warehouse, Plus, Building2 } from '@lucide/svelte'
   import { api } from '$lib/api'
   import { toast } from '$lib/stores/toast'
-
-  interface Branch { id: string; name: string; address: string }
-  interface WarehouseItem { id: string; branch_id: string; name: string; code: string; is_default: boolean }
+  import type { Branch, Warehouse as WarehouseModel } from '$lib/types'
 
   let branches = $state<Branch[]>([])
-  let warehouses = $state<WarehouseItem[]>([])
+  let warehouses = $state<WarehouseModel[]>([])
   let loading = $state(true)
   let showBranchForm = $state(false)
   let showWarehouseForm = $state(false)

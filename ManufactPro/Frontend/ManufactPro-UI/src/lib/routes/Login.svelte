@@ -56,8 +56,8 @@
 
     try {
       await auth.login(email.trim(), password)
-    } catch (err: any) {
-      generalError = err?.message ?? 'Invalid email or password. Please try again.'
+    } catch (err) {
+      generalError = err instanceof Error ? err.message : 'Invalid email or password. Please try again.'
     } finally {
       loading = false
     }

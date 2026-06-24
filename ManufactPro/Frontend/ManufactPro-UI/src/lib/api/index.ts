@@ -1,4 +1,15 @@
-import type { Material, Supplier, BomItem, ProductVariant, Product } from '$lib/types'
+import type { Material, Supplier, BomItem, ProductVariant, Product, Warehouse, Branch, StockMovement } from '$lib/types'
+import type {
+  ProductVariantView,
+  StockView,
+  DashboardReport,
+  HppMarginItem,
+  ProductionTrendItem,
+  ProductionOrderView,
+  PurchaseOrderView,
+  PurchaseOrderDetailView,
+  UserView,
+} from '$lib/types/views'
 import { auth } from '$lib/stores/auth'
 import { syncedWrite } from '$lib/sync/mutate'
 
@@ -99,7 +110,7 @@ export const api = {
   },
 
   productVariants: {
-    list: () => apiFetch<ProductVariant[]>('/api/variants'),
+    list: () => apiFetch<ProductVariantView[]>('/api/variants'),
     create: (productId: string, data: Omit<ProductVariant, 'id' | 'created_at' | 'product_id'>) =>
       apiFetch<ProductVariant>(`/api/products/${productId}/variants`, {
         method: 'POST', body: JSON.stringify(data),
@@ -126,22 +137,22 @@ export const api = {
   },
 
   users: {
-    list: () => apiFetch<any[]>('/api/users'),
+    list: () => apiFetch<UserView[]>('/api/users'),
     invite: (data: { name: string; email: string; role: string; password: string }) =>
-      apiFetch<any>('/api/users', { method: 'POST', body: JSON.stringify(data) }),
+      apiFetch<UserView>('/api/users', { method: 'POST', body: JSON.stringify(data) }),
     updateRole: (id: string, role: string) =>
-      apiFetch<any>(`/api/users/${id}/role`, { method: 'PATCH', body: JSON.stringify({ role }) }),
+      apiFetch<UserView>(`/api/users/${id}/role`, { method: 'PATCH', body: JSON.stringify({ role }) }),
     delete: (id: string) =>
       apiFetch<void>(`/api/users/${id}`, { method: 'DELETE' }),
   },
 
   warehouses: {
-    list: () => apiFetch<any[]>('/api/warehouses'),
-    listBranches: () => apiFetch<any[]>('/api/branches'),
+    list: () => apiFetch<Warehouse[]>('/api/warehouses'),
+    listBranches: () => apiFetch<Branch[]>('/api/branches'),
     create: (data: { branch_id: string; name: string; code: string; is_default: boolean }) =>
-      apiFetch<any>('/api/warehouses', { method: 'POST', body: JSON.stringify(data) }),
+      apiFetch<Warehouse>('/api/warehouses', { method: 'POST', body: JSON.stringify(data) }),
     createBranch: (data: { name: string; address: string }) =>
-      apiFetch<any>('/api/branches', { method: 'POST', body: JSON.stringify(data) }),
+      apiFetch<Branch>('/api/branches', { method: 'POST', body: JSON.stringify(data) }),
   },
 
   sync: {
@@ -160,8 +171,8 @@ export const api = {
   },
 
   stock: {
-    list: () => apiFetch<any[]>('/api/stock'),
-    movements: () => apiFetch<any[]>('/api/stock/movements'),
+    list: () => apiFetch<StockView[]>('/api/stock'),
+    movements: () => apiFetch<StockMovement[]>('/api/stock/movements'),
     transfer: (data: {
       from_warehouse_id: string
       to_warehouse_id: string
@@ -169,54 +180,54 @@ export const api = {
       item_id: string
       qty: number
       reason?: string
-    }) => apiFetch<any>('/api/stock/transfer', { method: 'POST', body: JSON.stringify(data) }),
+    }) => apiFetch<StockMovement>('/api/stock/transfer', { method: 'POST', body: JSON.stringify(data) }),
     adjustment: (data: {
       warehouse_id: string
       item_type: string
       item_id: string
       qty: number
       reason?: string
-    }) => apiFetch<any>('/api/stock/adjustment', { method: 'POST', body: JSON.stringify(data) }),
+    }) => apiFetch<StockMovement>('/api/stock/adjustment', { method: 'POST', body: JSON.stringify(data) }),
   },
 
   reports: {
-    dashboard: () => apiFetch<any>('/api/reports/dashboard'),
-    hppMargin: () => apiFetch<any[]>('/api/reports/hpp-margin'),
-    productionTrend: () => apiFetch<any[]>('/api/reports/production-trend'),
+    dashboard: () => apiFetch<DashboardReport>('/api/reports/dashboard'),
+    hppMargin: () => apiFetch<HppMarginItem[]>('/api/reports/hpp-margin'),
+    productionTrend: () => apiFetch<ProductionTrendItem[]>('/api/reports/production-trend'),
   },
 
   procurement: {
-    list: () => apiFetch<any[]>('/api/procurement/purchase-orders'),
-    getDetail: (id: string) => apiFetch<any>(`/api/procurement/purchase-orders/${id}`),
+    list: () => apiFetch<PurchaseOrderView[]>('/api/procurement/purchase-orders'),
+    getDetail: (id: string) => apiFetch<PurchaseOrderDetailView>(`/api/procurement/purchase-orders/${id}`),
     create: (data: {
       supplier_id: string
       warehouse_id: string
       po_number?: string
       expected_at?: string | null
       items: { material_id: string; qty_ordered: number; unit_price: number }[]
-    }) => apiFetch<any>('/api/procurement/purchase-orders', { method: 'POST', body: JSON.stringify(data) }),
+    }) => apiFetch<PurchaseOrderView>('/api/procurement/purchase-orders', { method: 'POST', body: JSON.stringify(data) }),
     send: (id: string) =>
-      apiFetch<any>(`/api/procurement/purchase-orders/${id}/send`, { method: 'PATCH' }),
+      apiFetch<PurchaseOrderView>(`/api/procurement/purchase-orders/${id}/send`, { method: 'PATCH' }),
     receive: (id: string, data: {
       note?: string
       items: { po_item_id: string; qty_received: number; batch_no?: string; expiry_at?: string | null }[]
-    }) => apiFetch<any>(`/api/procurement/purchase-orders/${id}/receive`, { method: 'POST', body: JSON.stringify(data) }),
+    }) => apiFetch<PurchaseOrderView>(`/api/procurement/purchase-orders/${id}/receive`, { method: 'POST', body: JSON.stringify(data) }),
     cancel: (id: string) =>
-      apiFetch<any>(`/api/procurement/purchase-orders/${id}/cancel`, { method: 'PATCH' }),
+      apiFetch<PurchaseOrderView>(`/api/procurement/purchase-orders/${id}/cancel`, { method: 'PATCH' }),
   },
 
   production: {
-    list: () => apiFetch<any[]>('/api/production/orders'),
+    list: () => apiFetch<ProductionOrderView[]>('/api/production/orders'),
     create: (data: {
       warehouse_id: string
       product_variant_id: string
       qty_planned: number
       planned_at?: string | null
-    }) => apiFetch<any>('/api/production/orders', { method: 'POST', body: JSON.stringify(data) }),
+    }) => apiFetch<ProductionOrderView>('/api/production/orders', { method: 'POST', body: JSON.stringify(data) }),
     start: (id: string) =>
-      apiFetch<any>(`/api/production/orders/${id}/start`, { method: 'POST' }),
+      apiFetch<ProductionOrderView>(`/api/production/orders/${id}/start`, { method: 'POST' }),
     cancel: (id: string) =>
-      apiFetch<any>(`/api/production/orders/${id}/cancel`, { method: 'PATCH' }),
+      apiFetch<ProductionOrderView>(`/api/production/orders/${id}/cancel`, { method: 'PATCH' }),
     recordOutput: (data: {
       production_order_id: string
       qty_good: number
@@ -225,7 +236,7 @@ export const api = {
       reject_reason?: string
       waste_reason?: string
     }) =>
-      apiFetch<any>(`/api/production/orders/${data.production_order_id}/output`, {
+      apiFetch<ProductionOrderView>(`/api/production/orders/${data.production_order_id}/output`, {
         method: 'POST', body: JSON.stringify(data),
       }),
   },

@@ -10,18 +10,9 @@
   import { api } from '$lib/api'
   import { toast } from '$lib/stores/toast'
   import { onMount } from 'svelte'
-
-  interface RawStock {
-    warehouse_id: string
-    warehouse_name: string
-    item_type: string
-    item_id: string
-    item_name: string
-    item_sku: string
-    qty_on_hand: number
-    unit_cost: number
-    value: number
-  }
+  import { formatRupiah } from '$lib/utils/format'
+  import type { Material } from '$lib/types'
+  import type { StockView } from '$lib/types/views'
 
   interface StockRow {
     key: string
@@ -38,8 +29,8 @@
     value: number
   }
 
-  let rawStock = $state<RawStock[]>([])
-  let materials = $state<any[]>([])
+  let rawStock = $state<StockView[]>([])
+  let materials = $state<Material[]>([])
   let warehouseList = $state<{ id: string; name: string }[]>([])
   let loading = $state(true)
   let errMsg = $state('')
@@ -54,14 +45,14 @@
     ])
     rawStock = stk
     materials = mats
-    warehouseList = whs.map((w: any) => ({ id: w.id, name: w.name }))
+    warehouseList = whs.map((w) => ({ id: w.id, name: w.name }))
   }
 
   onMount(async () => {
     try {
       await loadStock()
-    } catch (e: any) {
-      errMsg = e?.message ?? 'Gagal memuat stok'
+    } catch (e) {
+      errMsg = e instanceof Error ? e.message : 'Gagal memuat stok'
       console.error(e)
     } finally {
       loading = false
@@ -166,8 +157,8 @@
       await loadStock()
       showTransfer = false
       toast.success('Transfer berhasil', `${transfer.qty} dipindah antar gudang`)
-    } catch (e: any) {
-      const msg = e?.message ?? 'Transfer gagal'
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : 'Transfer gagal'
       transferErr = msg
       if (msg.toLowerCase().includes('insufficient') || msg.toLowerCase().includes('stok')) {
         toast.warning('Stok tidak cukup untuk transfer', msg)
@@ -223,7 +214,7 @@
     </button>
     <Card variant="glass">
       <p class="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">Total Value</p>
-      <p class="text-xl font-bold text-on-surface mt-1">Rp {totalValue.toLocaleString('id-ID')}</p>
+      <p class="text-xl font-bold text-on-surface mt-1">{formatRupiah(totalValue)}</p>
     </Card>
   </div>
 
@@ -280,7 +271,7 @@
                   <span class="text-on-surface-variant text-xs ml-1">{item.unit}</span>
                 </td>
                 <td class="px-4 py-3 text-right font-medium text-on-surface">
-                  Rp {item.value.toLocaleString('id-ID')}
+                  {formatRupiah(item.value)}
                 </td>
                 <td class="px-4 py-3 text-center">
                   {#if item.min_stock > 0 && item.current < item.min_stock}

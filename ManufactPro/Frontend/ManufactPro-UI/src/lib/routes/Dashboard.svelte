@@ -14,15 +14,18 @@
     Activity,
   } from '@lucide/svelte'
   import { api } from '$lib/api'
-  import { onMount } from 'svelte'
+  import { onMount, type Component } from 'svelte'
+  import { formatNumber } from '$lib/utils/format'
+  import type { Material, Product, StockMovement } from '$lib/types'
+  import type { StockView, DashboardReport } from '$lib/types/views'
 
   type StatusKind = 'success' | 'warning' | 'critical' | 'info'
 
-  let materials = $state<any[]>([])
-  let products = $state<any[]>([])
-  let rawStock = $state<any[]>([])
-  let movements = $state<any[]>([])
-  let dashboard = $state<any>({ stock_value: 0, completed_orders: 0, total_qty_produced: 0, received_pos: 0, material_cost_month: 0 })
+  let materials = $state<Material[]>([])
+  let products = $state<Product[]>([])
+  let rawStock = $state<StockView[]>([])
+  let movements = $state<StockMovement[]>([])
+  let dashboard = $state<DashboardReport>({ stock_value: 0, completed_orders: 0, total_qty_produced: 0, received_pos: 0, material_cost_month: 0 })
   let loading = $state(true)
 
   onMount(async () => {
@@ -66,13 +69,13 @@
 
   let lowCount = $derived(lowStockItems.length)
 
-  interface Kpi { label: string; value: string; note: string; critical?: boolean; icon: any; color: string }
+  interface Kpi { label: string; value: string; note: string; critical?: boolean; icon: Component; color: string }
 
   let kpis = $derived<Kpi[]>([
-    { label: 'Total Materials', value: materials.length.toLocaleString('id-ID'), note: 'tercatat', icon: Package, color: 'text-primary bg-primary/10' },
-    { label: 'Active Products', value: products.length.toLocaleString('id-ID'), note: 'aktif', icon: Factory, color: 'text-status-info bg-status-info/10' },
+    { label: 'Total Materials', value: formatNumber(materials.length), note: 'tercatat', icon: Package, color: 'text-primary bg-primary/10' },
+    { label: 'Active Products', value: formatNumber(products.length), note: 'aktif', icon: Factory, color: 'text-status-info bg-status-info/10' },
     { label: 'Nilai Persediaan', value: `Rp ${(dashboard.stock_value / 1e6).toFixed(1)}M`, note: 'total stok', icon: TrendingUp, color: 'text-status-success bg-status-success/10' },
-    { label: 'Low Stock Items', value: lowCount.toLocaleString('id-ID'), note: 'perlu reorder', critical: true, icon: AlertTriangle, color: 'text-status-critical bg-status-critical/10' },
+    { label: 'Low Stock Items', value: formatNumber(lowCount), note: 'perlu reorder', critical: true, icon: AlertTriangle, color: 'text-status-critical bg-status-critical/10' },
   ])
 
   // ── Recent activity from movements ──

@@ -9,35 +9,11 @@
   import { api } from '$lib/api'
   import { toast } from '$lib/stores/toast'
   import { toISO } from '$lib/utils/date'
+  import { formatRupiah } from '$lib/utils/format'
   import { onMount } from 'svelte'
   import { Truck, Plus, Search, Send, Package, CheckCircle2, Trash2 } from '@lucide/svelte'
-  import type { POStatus as PoStatus, BadgeVariant } from '$lib/types'
-
-  interface PO {
-    id: string
-    supplier_id: string
-    supplier_name: string
-    warehouse_id: string
-    warehouse_name: string
-    po_number: string
-    status: PoStatus
-    total_amount: number
-    ordered_at: string
-    expected_at: string | null
-    item_count: number
-  }
-
-  interface PODetail extends PO {
-    items: {
-      id: string
-      material_id: string
-      material_name: string
-      material_sku: string
-      qty_ordered: number
-      qty_received: number
-      unit_price: number
-    }[]
-  }
+  import type { POStatus as PoStatus, BadgeVariant, Warehouse } from '$lib/types'
+  import type { PurchaseOrderView as PO, PurchaseOrderDetailView as PODetail } from '$lib/types/views'
 
   let orders = $state<PO[]>([])
   let loading = $state(true)
@@ -54,9 +30,9 @@
         api.materials.list(),
       ])
       orders = pos
-      supplierOptions = suppliers.map((s: any) => ({ value: s.id, label: s.name }))
-      warehouseOptions = warehouses.map((w: any) => ({ value: w.id, label: w.name }))
-      materialOptions = materials.map((m: any) => ({ value: m.id, label: `${m.name} (${m.sku})` }))
+      supplierOptions = suppliers.map((s) => ({ value: s.id, label: s.name }))
+      warehouseOptions = (warehouses as Warehouse[]).map((w) => ({ value: w.id, label: w.name }))
+      materialOptions = materials.map((m) => ({ value: m.id, label: `${m.name} (${m.sku})` }))
     } catch (e) {
       console.error('Failed to load procurement data:', e)
     } finally {
@@ -118,7 +94,7 @@
         expected_at: toISO(createData.expectedAt),
         items: validItems.map(it => ({ material_id: it.materialId, qty_ordered: it.qty, unit_price: it.unitPrice })),
       })
-      orders = [{ ...po, item_count: po.items?.length ?? validItems.length }, ...orders]
+      orders = [{ ...po, item_count: po.item_count || validItems.length }, ...orders]
       showCreate = false
       createData = { supplierId: '', warehouseId: '', poNumber: '', expectedAt: '' }
       lineItems = [{ materialId: '', qty: 0, unitPrice: 0 }]
@@ -144,7 +120,7 @@
     try {
       const detail = await api.procurement.getDetail(po.id)
       receiveDetail = detail
-      receiveLines = detail.items.map((it: any) => ({
+      receiveLines = detail.items.map((it) => ({
         po_item_id: it.id,
         qty_received: it.qty_ordered - it.qty_received,
         batch_no: '',
@@ -162,7 +138,7 @@
     // Pre-flight: jangan terima lebih dari sisa yang dipesan
     const overReceive: string[] = []
     for (const l of receiveLines) {
-      const item = receiveDetail.items.find((it: any) => it.id === l.po_item_id)
+      const item = receiveDetail.items.find((it) => it.id === l.po_item_id)
       if (!item) continue
       const remaining = item.qty_ordered - item.qty_received
       if (l.qty_received > remaining + 1e-9) {
@@ -186,7 +162,7 @@
         note: receiveNote,
         items: validLines.map(l => ({ po_item_id: l.po_item_id, qty_received: l.qty_received, batch_no: l.batch_no || undefined })),
       })
-      orders = orders.map(o => o.id === updated.id ? { ...updated, item_count: updated.items?.length ?? o.item_count } : o)
+      orders = orders.map(o => o.id === updated.id ? { ...updated, item_count: updated.item_count || o.item_count } : o)
       showReceive = false
       toast.success('Barang diterima', `Status PO: ${updated.status}`)
     } catch (e) {
@@ -268,7 +244,7 @@
               <p class="text-xs text-on-surface-variant">{po.warehouse_name} · {po.item_count} item · {po.ordered_at.slice(0,10)}</p>
             </div>
             <div class="flex flex-col items-end gap-1.5 flex-shrink-0">
-              <p class="text-sm font-semibold text-on-surface">Rp {po.total_amount.toLocaleString('id-ID')}</p>
+              <p class="text-sm font-semibold text-on-surface">{formatRupiah(po.total_amount)}</p>
               <div class="flex gap-1">
                 {#if po.status === 'draft'}
                   <Button size="sm" variant="secondary" onclick={() => handleSend(po.id)}>

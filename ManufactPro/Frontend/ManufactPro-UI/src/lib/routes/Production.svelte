@@ -9,6 +9,7 @@
   import { api } from '$lib/api'
   import { toast } from '$lib/stores/toast'
   import { toISO } from '$lib/utils/date'
+  import { formatRupiah } from '$lib/utils/format'
   import { onMount } from 'svelte'
   import {
     Factory,
@@ -19,29 +20,11 @@
     CheckCircle,
     XCircle,
   } from '@lucide/svelte'
-  import type { ProductionStatus as Status, BadgeVariant, BomItem, ProductVariant, Warehouse } from '$lib/types'
-
-  // Variant list endpoint joins the parent product name onto each row.
-  type VariantWithProduct = ProductVariant & { product_name?: string }
+  import type { ProductionStatus as Status, BadgeVariant, BomItem } from '$lib/types'
+  import type { ProductionOrderView as ProdOrder } from '$lib/types/views'
 
   // BOM list rows carry joined material display fields beyond BomItem.
   type BomCheckRow = BomItem & { material_name?: string; material_sku?: string }
-
-  interface ProdOrder {
-    id: string
-    warehouse_id: string
-    warehouse_name: string
-    product_variant_id: string
-    variant_sku: string
-    product_name: string
-    qty_planned: number
-    status: Status
-    planned_at: string | null
-    started_at: string | null
-    completed_at: string | null
-    total_cost: number
-    created_at: string
-  }
 
   let orders = $state<ProdOrder[]>([])
   let loading = $state(true)
@@ -56,11 +39,11 @@
         api.warehouses.list(),
       ])
       orders = ordersData
-      variantOptions = (variantsData as VariantWithProduct[]).map((v) => ({
+      variantOptions = variantsData.map((v) => ({
         value: v.id,
         label: `${v.product_name ?? ''} — ${v.sku}`,
       }))
-      warehouseOptions = (warehousesData as Warehouse[]).map((w) => ({
+      warehouseOptions = warehousesData.map((w) => ({
         value: w.id,
         label: w.name,
       }))
@@ -299,7 +282,7 @@
                     <span class="text-xs font-medium">Berjalan</span>
                   </div>
                   {#if order.total_cost > 0}
-                    <span class="text-xs text-on-surface-variant">HPP: Rp {order.total_cost.toLocaleString('id-ID')}</span>
+                    <span class="text-xs text-on-surface-variant">HPP: {formatRupiah(order.total_cost)}</span>
                   {/if}
                   <Button size="sm" onclick={() => openOutput(order)}>
                     <CheckCircle class="w-3.5 h-3.5" />
@@ -308,7 +291,7 @@
                 </div>
               {:else if order.status === 'completed'}
                 <div class="text-right">
-                  <p class="text-sm font-semibold text-on-surface">HPP: Rp {order.total_cost.toLocaleString('id-ID')}</p>
+                  <p class="text-sm font-semibold text-on-surface">HPP: {formatRupiah(order.total_cost)}</p>
                   {#if order.completed_at}
                     <p class="text-xs text-on-surface-variant">{order.completed_at.slice(0,10)}</p>
                   {/if}

@@ -6,6 +6,7 @@
   import Input from '$lib/components/ui/Input.svelte'
   import Select from '$lib/components/ui/Select.svelte'
   import { api } from '$lib/api'
+  import { formatRupiah } from '$lib/utils/format'
   import type { ProductVariant, Material, BomItem } from '$lib/types'
   import {
     Calculator,
@@ -33,11 +34,13 @@
   let requirements = $state<MaterialRequirement[]>([])
   let showResults = $state(false)
 
-  let variantOptions = $derived(variants.map(v => ({ value: v.id, label: `${v.sku} - Rp ${v.sell_price.toLocaleString('id-ID')}` })))
+  let variantOptions = $derived(variants.map(v => ({ value: v.id, label: `${v.sku} - ${formatRupiah(v.sell_price)}` })))
 
   onMount(async () => {
-    materials = await api.materials.list()
-    variants = await api.productVariants.list()
+    [materials, variants] = await Promise.all([
+      api.materials.list(),
+      api.productVariants.list(),
+    ])
   })
 
   async function calculateRequirements() {

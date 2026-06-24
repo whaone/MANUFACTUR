@@ -119,16 +119,6 @@
       toast.error('Gagal menghapus material', e instanceof Error ? e.message : 'error')
     }
   }
-
-  const columns = [
-    { key: 'sku', label: 'SKU', width: '100px' },
-    { key: 'name', label: 'Material Name' },
-    { key: 'category', label: 'Category' },
-    { key: 'unit', label: 'Unit', width: '80px' },
-    { key: 'min_stock', label: 'Min Stock', width: '100px', align: 'right' as const },
-    { key: 'status', label: 'Status', width: '80px' },
-    { key: 'actions', label: '', width: '120px' },
-  ]
 </script>
 
 <div class="space-y-6">

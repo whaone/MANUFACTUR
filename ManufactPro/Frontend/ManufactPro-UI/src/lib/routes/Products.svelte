@@ -15,6 +15,7 @@
     generateCombos,
     buildSku,
   } from '$lib/utils/variants'
+  import { formatRupiah } from '$lib/utils/format'
   import {
     Search,
     Plus,
@@ -353,7 +354,7 @@
                             </div>
                           </td>
                           <td class="px-3 py-2 text-right font-medium text-on-surface">
-                            Rp {variant.sell_price.toLocaleString('id-ID')}
+                            {formatRupiah(variant.sell_price)}
                           </td>
                           <td class="px-3 py-2 text-center">
                             {#if variant.is_active}
