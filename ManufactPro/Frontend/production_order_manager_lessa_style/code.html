@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MFG OS - Production Order Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-error-container": "#93000a",
+                    "inverse-surface": "#30312f",
+                    "on-tertiary-container": "#f6fffa",
+                    "on-surface-variant": "#414942",
+                    "secondary-container": "#fe852b",
+                    "primary-fixed-dim": "#60dda2",
+                    "on-background": "#1b1c1b",
+                    "on-primary-container": "#000703",
+                    "on-secondary-container": "#632c00",
+                    "error": "#ba1a1a",
+                    "surface": "#fbf9f7",
+                    "on-surface": "#1b1c1b",
+                    "surface-dim": "#dbdad8",
+                    "tertiary-container": "#6e7673",
+                    "surface-container-high": "#e9e8e6",
+                    "on-tertiary": "#ffffff",
+                    "secondary-fixed-dim": "#ffb68a",
+                    "secondary": "#994700",
+                    "surface-container-lowest": "#ffffff",
+                    "tertiary-fixed-dim": "#bfc8c5",
+                    "on-error": "#ffffff",
+                    "background": "#fbf9f7",
+                    "tertiary": "#555e5b",
+                    "primary": "#006c47",
+                    "outline-variant": "#c0c9c0",
+                    "surface-variant": "#e4e2e0",
+                    "primary-container": "#00885a",
+                    "inverse-on-surface": "#f2f0ee",
+                    "surface-bright": "#fbf9f7",
+                    "on-secondary": "#ffffff",
+                    "tertiary-fixed": "#dbe4e1",
+                    "surface-container-highest": "#e4e2e0",
+                    "surface-container": "#efeeeb",
+                    "on-secondary-fixed-variant": "#743400",
+                    "on-secondary-fixed": "#321300",
+                    "on-tertiary-fixed": "#151d1b",
+                    "on-primary-fixed-variant": "#005235",
+                    "secondary-fixed": "#ffdbc8",
+                    "on-tertiary-fixed-variant": "#404946",
+                    "primary-fixed": "#7efabd",
+                    "on-primary": "#ffffff",
+                    "surface-container-low": "#f5f3f1",
+                    "outline": "#717972",
+                    "inverse-primary": "#60dda2",
+                    "on-primary-fixed": "#002113",
+                    "error-container": "#ffdad6",
+                    "surface-tint": "#006c47"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "2xl": "1.5rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "base": "4px",
+                    "sm": "16px",
+                    "lg": "32px",
+                    "xl": "48px",
+                    "xs": "8px",
+                    "md": "24px",
+                    "gutter": "24px",
+                    "container-margin": "32px"
+            },
+            "fontFamily": {
+                    "headline-xl": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "body-md": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "label-caps": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-xl": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-md": ["20px", {"lineHeight": "1.4", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                    "body-lg": ["16px", {"lineHeight": "1.6", "letterSpacing": "0em", "fontWeight": "400"}],
+                    "body-md": ["14px", {"lineHeight": "1.5", "letterSpacing": "0em", "fontWeight": "400"}],
+                    "headline-lg": ["24px", {"lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "label-sm": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "label-caps": ["10px", {"lineHeight": "1", "letterSpacing": "0.1em", "fontWeight": "700", "textTransform": "uppercase"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #FBF9F7;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+        }
+
+        .glass-card {
+            background: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 24px;
+            box-shadow: 0 20px 40px -10px rgba(0, 108, 71, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 25px 50px -12px rgba(0, 108, 71, 0.12);
+        }
+
+        .btn-3d-primary {
+            background: linear-gradient(135deg, #34B780 0%, #006c47 100%);
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 0 #004d33, 0 8px 15px rgba(0, 108, 71, 0.3);
+            transition: all 0.1s ease;
+        }
+
+        .btn-3d-primary:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #004d33, 0 4px 8px rgba(0, 108, 71, 0.3);
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .scroll-hide::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .fill-icon {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+</head>
+<body class="text-on-surface">
+<!-- Top Navigation Anchor -->
+<header class="fixed top-0 left-0 right-0 h-16 glass-panel z-50 flex justify-between items-center px-lg border-b border-ui-border">
+<div class="flex items-center gap-md">
+<span class="font-headline-lg text-headline-lg font-bold tracking-tight text-primary">MFG OS</span>
+<div class="hidden md:flex items-center gap-sm ml-xl">
+<button class="text-primary font-bold transition-all opacity-80 scale-[0.99]">Production</button>
+<button class="text-on-surface-variant hover:bg-surface-container-low px-sm py-xs rounded-lg transition-colors">Analytics</button>
+<button class="text-on-surface-variant hover:bg-surface-container-low px-sm py-xs rounded-lg transition-colors">Resources</button>
+</div>
+</div>
+<div class="flex items-center gap-sm">
+<button class="p-xs rounded-full hover:bg-surface-container-low text-on-surface-variant">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-xs rounded-full hover:bg-surface-container-low text-on-surface-variant">
+<span class="material-symbols-outlined">cloud_done</span>
+</button>
+<div class="h-8 w-8 rounded-full bg-primary-container overflow-hidden border border-white/50">
+<img alt="Production Manager Profile" data-alt="A professional portrait of a modern production manager in a clean industrial office setting. The person is wearing a subtle gray tech-vest over a white shirt, looking focused yet friendly. The background features blurred manufacturing equipment and a bright, airy aesthetic consistent with a high-end dashboard interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCntTMDYTNkhfv42TxwrLnlOVYbOx-rzfMCTT-cuCv5Iz3YPBvaqa0WsTXEYcaazERPeXiJO8z0XKXZemE0bLFjlUq_pjm_q9rTL6dMDzCdj8A51nt21nLEAQFpVjtzxjtfaU_cFj4g3_AfylWL9rtkRPWOShyLExHB2RbXUl-DCvAYclBVrcDKS00P5R8OjMjUgmmmUgLHXOwg8tzy1HMwEuzB_fui5us60IgG6EI0b63EA0USVd1VYJQ1aAJYPD0A7dA9PqxsLS7X"/>
+</div>
+</div>
+</header>
+<!-- Side Navigation Anchor -->
+<aside class="w-64 h-screen fixed left-0 top-0 pt-20 pb-lg px-sm glass-panel border-r border-ui-border hidden lg:flex flex-col z-40">
+<div class="mb-lg px-sm">
+<button class="w-full btn-3d-primary text-white py-sm rounded-xl font-bold flex items-center justify-center gap-xs">
+<span class="material-symbols-outlined text-[20px]">add</span>
+<span>New Production Order</span>
+</button>
+</div>
+<nav class="flex-1 space-y-xs">
+<a class="flex items-center gap-sm px-sm py-sm bg-secondary-container text-on-secondary-container rounded-xl font-bold translate-x-1 transition-transform" href="#">
+<span class="material-symbols-outlined fill-icon" style="font-variation-settings: 'FILL' 1;">factory</span>
+<span class="font-label-caps text-label-caps">Production</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-sm text-on-primary-container/70 hover:text-primary transition-colors hover:bg-primary-container/10 rounded-xl" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+<span class="font-label-caps text-label-caps">Inventory</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-sm text-on-primary-container/70 hover:text-primary transition-colors hover:bg-primary-container/10 rounded-xl" href="#">
+<span class="material-symbols-outlined">shopping_cart</span>
+<span class="font-label-caps text-label-caps">Procurement</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-sm text-on-primary-container/70 hover:text-primary transition-colors hover:bg-primary-container/10 rounded-xl" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-label-caps text-label-caps">Finance</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-sm text-on-primary-container/70 hover:text-primary transition-colors hover:bg-primary-container/10 rounded-xl" href="#">
+<span class="material-symbols-outlined">database</span>
+<span class="font-label-caps text-label-caps">Master Data</span>
+</a>
+</nav>
+<div class="mt-auto border-t border-ui-border pt-sm px-sm">
+<div class="flex items-center justify-between text-on-surface-variant opacity-60">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-[18px]">sync</span>
+<span class="font-label-caps text-[10px]">v2.4.1 Online</span>
+</div>
+<div class="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="lg:ml-64 pt-20 px-container-margin pb-xl min-h-screen">
+<header class="mb-lg flex flex-col md:flex-row md:items-end justify-between gap-md">
+<div>
+<h1 class="font-headline-xl text-headline-xl text-on-surface mb-xs">Active Production Orders</h1>
+<p class="font-body-md text-on-surface-variant max-w-xl">Real-time oversight of current manufacturing cycles, resource allocation, and quality benchmarks.</p>
+</div>
+<div class="flex gap-sm">
+<div class="bg-surface-container rounded-full px-sm py-xs flex items-center gap-xs border border-white/50 shadow-sm">
+<span class="material-symbols-outlined text-[18px] text-primary">filter_list</span>
+<span class="font-label-sm text-label-sm">Filters: All Orders</span>
+</div>
+<div class="bg-surface-container rounded-full px-sm py-xs flex items-center gap-xs border border-white/50 shadow-sm">
+<span class="material-symbols-outlined text-[18px] text-primary">search</span>
+<span class="font-label-sm text-label-sm">Search PO#</span>
+</div>
+</div>
+</header>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-12 gap-gutter">
+<!-- List View (Left Column) -->
+<div class="col-span-12 xl:col-span-4 space-y-gutter overflow-y-auto max-h-[calc(100vh-250px)] scroll-hide pr-xs">
+<!-- Order Card: In Progress -->
+<div class="glass-card p-md border-l-4 border-l-primary cursor-pointer active:scale-[0.98] transition-all bg-white shadow-lg" onclick="selectOrder('PO-9921')">
+<div class="flex justify-between items-start mb-sm">
+<div>
+<span class="font-label-caps text-[10px] text-primary block mb-1">In Progress</span>
+<h3 class="font-headline-md text-headline-md">PO-9921</h3>
+</div>
+<span class="status-badge bg-primary-container text-on-primary-container">RUNNING</span>
+</div>
+<p class="font-body-md text-on-surface-variant mb-md">Titanium Gear Housing (T-400)</p>
+<div class="flex items-center gap-sm">
+<div class="flex-1 bg-surface-container h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[65%] rounded-full"></div>
+</div>
+<span class="font-label-sm text-label-sm">65%</span>
+</div>
+</div>
+<!-- Order Card: Draft -->
+<div class="glass-card p-md opacity-80 hover:opacity-100 cursor-pointer transition-all bg-white/50 border border-ui-border" onclick="selectOrder('PO-9925')">
+<div class="flex justify-between items-start mb-sm">
+<div>
+<span class="font-label-caps text-[10px] text-tertiary block mb-1">Scheduled</span>
+<h3 class="font-headline-md text-headline-md">PO-9925</h3>
+</div>
+<span class="status-badge bg-surface-container text-on-surface-variant">DRAFT</span>
+</div>
+<p class="font-body-md text-on-surface-variant mb-md">Aero-Alloy Structural Ribs</p>
+<div class="flex items-center gap-sm">
+<div class="flex-1 bg-surface-container h-1.5 rounded-full overflow-hidden">
+<div class="bg-tertiary h-full w-[0%] rounded-full"></div>
+</div>
+<span class="font-label-sm text-label-sm">0%</span>
+</div>
+</div>
+<!-- Order Card: Completed -->
+<div class="glass-card p-md opacity-80 hover:opacity-100 cursor-pointer transition-all bg-white/50 border border-ui-border" onclick="selectOrder('PO-9918')">
+<div class="flex justify-between items-start mb-sm">
+<div>
+<span class="font-label-caps text-[10px] text-on-surface-variant block mb-1">Finalized</span>
+<h3 class="font-headline-md text-headline-md">PO-9918</h3>
+</div>
+<span class="status-badge bg-primary/10 text-primary">COMPLETED</span>
+</div>
+<p class="font-body-md text-on-surface-variant mb-md">Brazed Cooling Manifold</p>
+<div class="flex items-center gap-sm text-primary">
+<span class="material-symbols-outlined text-[18px]">check_circle</span>
+<span class="font-label-sm text-label-sm">Quality Pass (99.2%)</span>
+</div>
+</div>
+<!-- Order Card: Cancelled -->
+<div class="glass-card p-md opacity-60 grayscale hover:grayscale-0 cursor-pointer transition-all bg-white/30 border border-ui-border" onclick="selectOrder('PO-9910')">
+<div class="flex justify-between items-start mb-sm">
+<div>
+<span class="font-label-caps text-[10px] text-error block mb-1">Terminated</span>
+<h3 class="font-headline-md text-headline-md">PO-9910</h3>
+</div>
+<span class="status-badge bg-error-container text-on-error-container">CANCELLED</span>
+</div>
+<p class="font-body-md text-on-surface-variant mb-md">High-Pressure Valve Stem</p>
+<span class="font-label-sm text-label-sm text-error">Halted: Material Shortage</span>
+</div>
+</div>
+<!-- Detailed View (Main Column) -->
+<div class="col-span-12 xl:col-span-8 flex flex-col gap-gutter">
+<!-- Main Order Details Card -->
+<div class="glass-panel rounded-2xl p-lg flex flex-col gap-lg border border-white/60 relative overflow-hidden">
+<!-- Background Accent -->
+<div class="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -mr-20 -mt-20"></div>
+<div class="flex flex-col md:flex-row justify-between gap-md items-start relative">
+<div class="flex items-center gap-md">
+<div class="w-16 h-16 rounded-2xl bg-primary flex items-center justify-center text-white shadow-lg">
+<span class="material-symbols-outlined text-[32px] fill-icon">precision_manufacturing</span>
+</div>
+<div>
+<h2 class="font-headline-xl text-headline-xl text-primary" id="selected-po-id">PO-9921</h2>
+<p class="font-body-lg text-body-lg">Titanium Gear Housing Assembly (T-400 Series)</p>
+</div>
+</div>
+<div class="flex gap-sm">
+<button class="bg-white border border-ui-border px-md py-sm rounded-xl font-bold hover:bg-surface-container-low transition-colors shadow-sm">View BOM</button>
+<button class="btn-3d-primary text-white px-md py-sm rounded-xl font-bold" onclick="openQCModal()">Complete Production</button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-md">
+<div class="bg-surface-container-low p-md rounded-2xl border border-white">
+<p class="font-label-caps text-label-caps text-on-surface-variant mb-xs">Station Assignment</p>
+<p class="font-headline-md text-headline-md">CNC-04 Milling</p>
+</div>
+<div class="bg-surface-container-low p-md rounded-2xl border border-white">
+<p class="font-label-caps text-label-caps text-on-surface-variant mb-xs">Target Quantity</p>
+<p class="font-headline-md text-headline-md">250 Units</p>
+</div>
+<div class="bg-surface-container-low p-md rounded-2xl border border-white">
+<p class="font-label-caps text-label-caps text-on-surface-variant mb-xs">Estimated Finish</p>
+<p class="font-headline-md text-headline-md">Today, 16:45</p>
+</div>
+</div>
+<!-- Material Status Table -->
+<div class="mt-md">
+<h4 class="font-label-caps text-label-caps text-primary mb-sm">Material Reservation Status</h4>
+<div class="overflow-x-auto">
+<table class="w-full">
+<thead>
+<tr class="text-left font-label-caps text-[10px] text-on-surface-variant border-b border-ui-border">
+<th class="pb-xs">Component</th>
+<th class="pb-xs">Required</th>
+<th class="pb-xs">Reserved</th>
+<th class="pb-xs">Status</th>
+</tr>
+</thead>
+<tbody class="font-body-md divide-y divide-ui-border/30">
+<tr>
+<td class="py-sm">Ti-6Al-4V Blank</td>
+<td class="py-sm">250 kg</td>
+<td class="py-sm">250 kg</td>
+<td class="py-sm"><span class="text-primary font-bold">Allocated</span></td>
+</tr>
+<tr>
+<td class="py-sm">Carbide Inserts (12mm)</td>
+<td class="py-sm">40 pcs</td>
+<td class="py-sm">38 pcs</td>
+<td class="py-sm"><span class="text-secondary font-bold">Partial (Critical)</span></td>
+</tr>
+<tr>
+<td class="py-sm">Synthetic Coolant C-1</td>
+<td class="py-sm">120 L</td>
+<td class="py-sm">150 L</td>
+<td class="py-sm"><span class="text-primary font-bold">Allocated</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Progress Tracking -->
+<div class="mt-md space-y-md">
+<div class="flex justify-between items-center">
+<h4 class="font-label-caps text-label-caps text-primary">Manufacturing Cycle Progress</h4>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Stage: Finishing &amp; Polishing</span>
+</div>
+<div class="relative h-12 bg-surface-container rounded-2xl overflow-hidden border border-white">
+<div class="absolute inset-0 bg-primary/10 flex items-center px-md text-primary font-bold text-[12px] uppercase">
+                                Cycle Active: 162/250 Completed
+                            </div>
+<div class="h-full bg-primary/40 w-[65%] border-r-2 border-primary relative">
+<div class="absolute inset-0 bg-gradient-to-r from-transparent to-primary/20 animate-pulse"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Secondary Meta Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<div class="glass-card p-md">
+<div class="flex items-center gap-sm mb-md">
+<span class="material-symbols-outlined text-secondary">warning</span>
+<h4 class="font-headline-md text-headline-md">Yield Warnings</h4>
+</div>
+<p class="font-body-md text-on-surface-variant mb-md">Station CNC-04 reports vibration spikes above threshold. Potential impact on surface finish tolerance.</p>
+<button class="text-secondary font-bold hover:underline font-label-sm">Request Tech Support</button>
+</div>
+<div class="glass-card p-md">
+<div class="flex items-center gap-sm mb-md">
+<span class="material-symbols-outlined text-primary">person</span>
+<h4 class="font-headline-md text-headline-md">Operator Log</h4>
+</div>
+<div class="flex items-center gap-sm">
+<div class="w-10 h-10 rounded-full bg-surface-container overflow-hidden">
+<img alt="Operator" data-alt="A close-up portrait of a manufacturing operator wearing safety glasses and a headset. The lighting is bright and industrial, with a background of specialized CNC machinery. The image has a clean, professional look consistent with high-tech manufacturing visuals." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDcvVf-YqhUhatevhKYHEPatyCNuvv8CNGt_HWiQNHJlnOFkCKt_HtnyrAu0gu6vagC1WL_YSQQ2QibxAHB-1k94l60XootTimTf8ZQ0cKRdNZjuUCzHygQoXN76xOd-jVoS_HZP5GBYgJMTwtDma46XIAsw27WrCUcubuai_Gf0ze_Cl9fjBloGaO7fTXZc9RF5heT_3gy8JGwe9RzvTxDYJ597UQWaLsgyDkz6DRImQekLa5FPTLzYpYINAylcpmaRvv9Mg4CUAFj"/>
+</div>
+<div>
+<p class="font-body-md font-bold">John Dorsey</p>
+<p class="font-label-sm text-on-surface-variant">Shift: A-N (06:00 - 14:00)</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- QC Result Modal (Hidden by default) -->
+<div class="fixed inset-0 z-[100] hidden flex items-center justify-center p-md" id="qc-modal">
+<div class="absolute inset-0 bg-on-background/40 backdrop-blur-sm" onclick="closeQCModal()"></div>
+<div class="glass-panel w-full max-w-lg rounded-[32px] p-xl relative border border-white/50 shadow-2xl">
+<h3 class="font-headline-xl text-headline-xl text-primary mb-md">Production Quality Input</h3>
+<p class="font-body-md text-on-surface-variant mb-xl">Submit final production metrics for PO-9921. Data will be logged for OEE and Material Reconciliation.</p>
+<div class="space-y-lg">
+<div class="grid grid-cols-3 gap-md">
+<div class="space-y-xs">
+<label class="font-label-caps text-label-caps text-primary">Good Units</label>
+<input class="w-full bg-surface-container border-none rounded-xl font-headline-md text-primary text-center py-md focus:ring-2 focus:ring-primary" type="number" value="248"/>
+</div>
+<div class="space-y-xs">
+<label class="font-label-caps text-label-caps text-secondary">Rejected</label>
+<input class="w-full bg-surface-container border-none rounded-xl font-headline-md text-secondary text-center py-md focus:ring-2 focus:ring-secondary" type="number" value="1"/>
+</div>
+<div class="space-y-xs">
+<label class="font-label-caps text-label-caps text-error">Waste</label>
+<input class="w-full bg-surface-container border-none rounded-xl font-headline-md text-error text-center py-md focus:ring-2 focus:ring-error" type="number" value="1"/>
+</div>
+</div>
+<div class="space-y-xs">
+<label class="font-label-caps text-label-caps text-on-surface-variant">QC Note / Reason for Variance</label>
+<textarea class="w-full bg-surface-container border-none rounded-xl font-body-md p-md focus:ring-2 focus:ring-primary h-24" placeholder="Optional: Enter QC inspector comments..."></textarea>
+</div>
+<div class="flex gap-md pt-md">
+<button class="flex-1 border border-ui-border py-md rounded-2xl font-bold hover:bg-surface-container-low transition-all" onclick="closeQCModal()">Cancel</button>
+<button class="flex-1 btn-3d-primary text-white py-md rounded-2xl font-bold" onclick="submitQC()">Submit &amp; Complete</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Floating Action Button Anchor (Only for specific screens) -->
+<button class="fixed bottom-lg right-lg w-16 h-16 rounded-full btn-3d-primary text-white flex items-center justify-center shadow-2xl lg:hidden z-50">
+<span class="material-symbols-outlined text-[32px]">add</span>
+</button>
+<script>
+        function selectOrder(id) {
+            document.getElementById('selected-po-id').innerText = id;
+            // Interaction: Pulse effect on click
+            const target = event.currentTarget;
+            target.style.transform = "scale(0.98)";
+            setTimeout(() => {
+                target.style.transform = "scale(1)";
+            }, 150);
+        }
+
+        function openQCModal() {
+            const modal = document.getElementById('qc-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            // Animation for modal entry
+            modal.children[1].style.opacity = '0';
+            modal.children[1].style.transform = 'scale(0.9) translateY(20px)';
+            setTimeout(() => {
+                modal.children[1].style.transition = 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)';
+                modal.children[1].style.opacity = '1';
+                modal.children[1].style.transform = 'scale(1) translateY(0)';
+            }, 10);
+        }
+
+        function closeQCModal() {
+            const modal = document.getElementById('qc-modal');
+            modal.children[1].style.opacity = '0';
+            modal.children[1].style.transform = 'scale(0.9) translateY(20px)';
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }, 300);
+        }
+
+        function submitQC() {
+            alert('Production record submitted successfully. Inventory updated.');
+            closeQCModal();
+        }
+    </script>
+</body></html>

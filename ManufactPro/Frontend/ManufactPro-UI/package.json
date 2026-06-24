@@ -1,0 +1,34 @@
+{
+  "name": "manufactpro-ui",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-check --tsconfig ./tsconfig.app.json && tsc -p tsconfig.node.json"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^7.1.2",
+    "@tsconfig/svelte": "^5.0.8",
+    "@types/node": "^24.12.3",
+    "svelte": "^5.55.5",
+    "svelte-check": "^4.4.8",
+    "typescript": "~6.0.2",
+    "vite": "^8.0.12"
+  },
+  "dependencies": {
+    "@fontsource/inter": "^5.2.8",
+    "@lucide/svelte": "^1.17.0",
+    "@tailwindcss/vite": "^4.3.0",
+    "chart.js": "^4.5.1",
+    "clsx": "^2.1.1",
+    "dexie": "^4.4.3",
+    "svelte-chartjs": "^4.0.1",
+    "svelte-routing": "^2.13.0",
+    "tailwind-merge": "^3.6.0",
+    "tailwindcss": "^4.3.0",
+    "vite-plugin-pwa": "^1.3.0"
+  }
+}

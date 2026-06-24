@@ -1,0 +1,12 @@
+DROP INDEX IF EXISTS idx_stock_mov_item;
+DROP INDEX IF EXISTS idx_stock_mov_ws;
+DROP INDEX IF EXISTS idx_batches_fifo;
+DROP INDEX IF EXISTS idx_variant_barcode;
+DROP INDEX IF EXISTS idx_material_barcode;
+DROP INDEX IF EXISTS idx_materials_ws;
+DROP INDEX IF EXISTS idx_products_ws;
+DROP INDEX IF EXISTS idx_prod_orders_ws;
+DROP INDEX IF EXISTS idx_po_ws;
+DROP INDEX IF EXISTS idx_suppliers_ws;
+DROP INDEX IF EXISTS idx_branches_ws;
+DROP INDEX IF EXISTS idx_warehouses_branch;

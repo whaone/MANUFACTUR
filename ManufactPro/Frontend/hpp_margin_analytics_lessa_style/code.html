@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MFG OS | HPP &amp; Margin Report</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FBF9F7;
+            overflow-x: hidden;
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 30px 50px -12px rgba(0, 108, 71, 0.05);
+        }
+
+        .glass-card {
+            background: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.04);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 40px -10px rgba(52, 183, 128, 0.1);
+        }
+
+        .primary-gradient {
+            background: linear-gradient(135deg, #34B780 0%, #00885A 100%);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .sidebar-active-pill {
+            background: #34B780;
+            box-shadow: 0 4px 12px rgba(52, 183, 128, 0.3);
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        /* Chart Animations */
+        @keyframes grow-up {
+            from { height: 0; }
+            to { height: 100%; }
+        }
+        .animate-grow {
+            animation: grow-up 1s ease-out forwards;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error-container": "#93000a",
+                        "inverse-surface": "#30312f",
+                        "on-tertiary-container": "#f6fffa",
+                        "on-surface-variant": "#414942",
+                        "secondary-container": "#fe852b",
+                        "primary-fixed-dim": "#60dda2",
+                        "on-background": "#1b1c1b",
+                        "on-primary-container": "#000703",
+                        "on-secondary-container": "#632c00",
+                        "error": "#ba1a1a",
+                        "surface": "#fbf9f7",
+                        "on-surface": "#1b1c1b",
+                        "surface-dim": "#dbdad8",
+                        "tertiary-container": "#6e7673",
+                        "surface-container-high": "#e9e8e6",
+                        "on-tertiary": "#ffffff",
+                        "secondary-fixed-dim": "#ffb68a",
+                        "secondary": "#994700",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-fixed-dim": "#bfc8c5",
+                        "on-error": "#ffffff",
+                        "background": "#fbf9f7",
+                        "tertiary": "#555e5b",
+                        "primary": "#006c47",
+                        "outline-variant": "#c0c9c0",
+                        "surface-variant": "#e4e2e0",
+                        "primary-container": "#00885a",
+                        "inverse-on-surface": "#f2f0ee",
+                        "surface-bright": "#fbf9f7",
+                        "on-secondary": "#ffffff",
+                        "tertiary-fixed": "#dbe4e1",
+                        "surface-container-highest": "#e4e2e0",
+                        "surface-container": "#efeeeb",
+                        "on-secondary-fixed-variant": "#743400",
+                        "on-secondary-fixed": "#321300",
+                        "on-tertiary-fixed": "#151d1b",
+                        "on-primary-fixed-variant": "#005235",
+                        "secondary-fixed": "#ffdbc8",
+                        "on-tertiary-fixed-variant": "#404946",
+                        "primary-fixed": "#7efabd",
+                        "on-primary": "#ffffff",
+                        "surface-container-low": "#f5f3f1",
+                        "outline": "#717972",
+                        "inverse-primary": "#60dda2",
+                        "on-primary-fixed": "#002113",
+                        "error-container": "#ffdad6",
+                        "surface-tint": "#006c47"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "base": "4px",
+                        "sm": "16px",
+                        "lg": "32px",
+                        "xl": "48px",
+                        "xs": "8px",
+                        "md": "24px",
+                        "gutter": "24px",
+                        "container-margin": "32px",
+                        "standard": "24px",
+                        "comfortable": "32px",
+                        "page-margin": "32px"
+                    },
+                    "fontFamily": {
+                        "headline-xl": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "label-caps": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-xl": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-md": ["20px", {"lineHeight": "1.4", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                        "body-lg": ["16px", {"lineHeight": "1.6", "letterSpacing": "0em", "fontWeight": "400"}],
+                        "body-md": ["14px", {"lineHeight": "1.5", "letterSpacing": "0em", "fontWeight": "400"}],
+                        "headline-lg": ["24px", {"lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "label-sm": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "label-caps": ["11px", {"lineHeight": "1", "letterSpacing": "0.08em", "fontWeight": "700", "textTransform": "uppercase"}]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-surface text-on-surface">
+<!-- Sidebar Navigation -->
+<aside class="w-60 h-screen fixed left-0 top-0 glass-panel flex flex-col py-standard px-comfortable z-50">
+<div class="mb-lg">
+<h1 class="font-headline-md text-headline-md font-black text-primary tracking-tighter">MFG OS</h1>
+<p class="font-label-sm text-label-sm text-outline opacity-60">v2.4.1 Online</p>
+</div>
+<nav class="flex-1 space-y-2">
+<!-- Finance is Active -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl bg-secondary-container text-on-secondary-container font-bold translate-x-1 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span class="font-label-caps text-label-caps">Finance</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="factory">factory</span>
+<span class="font-label-caps text-label-caps">Production</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+<span class="font-label-caps text-label-caps">Inventory</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="shopping_cart">shopping_cart</span>
+<span class="font-label-caps text-label-caps">Procurement</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="database">database</span>
+<span class="font-label-caps text-label-caps">Master Data</span>
+</a>
+</nav>
+<div class="pt-lg border-t border-outline-variant">
+<button class="w-full flex items-center justify-center gap-2 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-xl transition-all">
+<span class="material-symbols-outlined text-[18px]" data-icon="sync">sync</span>
+<span class="font-label-caps text-label-caps">Offline Sync</span>
+</button>
+</div>
+</aside>
+<!-- Top Navigation Bar -->
+<header class="fixed top-0 left-60 right-0 h-16 bg-surface/80 backdrop-blur-md z-40 border-b border-ui-border flex justify-between items-center px-page-margin">
+<div class="flex items-center gap-4">
+<h2 class="font-headline-lg text-headline-lg font-bold tracking-tight text-primary">HPP &amp; Margin Analysis</h2>
+<div class="h-6 w-[1px] bg-outline-variant"></div>
+<div class="flex items-center gap-2 text-outline">
+<span class="material-symbols-outlined text-[20px]" data-icon="calendar_today">calendar_today</span>
+<span class="font-body-md text-body-md">Oct 1, 2023 - Oct 31, 2023</span>
+</div>
+</div>
+<div class="flex items-center gap-sm">
+<div class="flex items-center gap-2 bg-surface-container px-3 py-2 rounded-lg">
+<span class="material-symbols-outlined text-outline" data-icon="search">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-body-md font-body-md w-48" placeholder="Search parameters..." type="text"/>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 text-outline hover:bg-surface-container-low rounded-full transition-colors">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 text-outline hover:bg-surface-container-low rounded-full transition-colors">
+<span class="material-symbols-outlined" data-icon="cloud_done">cloud_done</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-primary-container overflow-hidden border border-primary/20">
+<img alt="Profile" data-alt="A professional production manager portrait icon with a clean, friendly aesthetic, wearing minimalist workshop attire against a soft emerald background, high resolution digital avatar style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBjWoSfcTbQyFrOjuIhOPBEXnMdkXRdC5tedNWycwkD7peYQgWLJcmG2lG02eqkGZD70RGWwDNqSyLN2lykOCkUhN2vu2i3hERns6z38YmYHvT7bjlo2jlGVyadfRDhCwE6adc7m548Rg5rCbX-Y7nSFE2NzdKkxzRZHkfgcE1MAFWEqxLBaW5h-n5v6KMuLnB2LqA6NHcCDu2lp64Yng1o1qTrCDV_-4P8LMBzpRJ6Xbui6a2VPVrN14SxqvAuHABxZ3_qGKLWNvBj"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-60 pt-24 px-page-margin pb-12">
+<!-- Action Toolbar -->
+<div class="flex justify-between items-center mb-lg">
+<div class="flex gap-3">
+<div class="flex rounded-lg overflow-hidden border border-outline-variant">
+<button class="px-4 py-2 bg-primary-container text-white font-bold font-label-caps text-label-caps transition-colors">FIFO</button>
+<button class="px-4 py-2 bg-white text-on-surface-variant hover:bg-surface-container font-label-caps text-label-caps transition-colors">W. Average</button>
+</div>
+<div class="flex items-center gap-2 bg-white border border-outline-variant rounded-lg px-3 py-1">
+<span class="font-label-caps text-label-caps text-outline">Currency:</span>
+<span class="font-body-md text-body-md font-bold">USD</span>
+<span class="material-symbols-outlined text-[16px]" data-icon="expand_more">expand_more</span>
+</div>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 px-4 py-2 rounded-xl border border-primary text-primary font-bold hover:bg-primary/5 transition-all">
+<span class="material-symbols-outlined text-[20px]" data-icon="upload_file">upload_file</span>
+<span class="font-label-caps text-label-caps">Export Excel</span>
+</button>
+<button class="flex items-center gap-2 px-4 py-2 rounded-xl primary-gradient text-white font-bold transition-all transform active:scale-95">
+<span class="material-symbols-outlined text-[20px]" data-icon="picture_as_pdf">picture_as_pdf</span>
+<span class="font-label-caps text-label-caps">Export PDF</span>
+</button>
+</div>
+</div>
+<!-- High Level KPIs Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter mb-lg">
+<div class="glass-card rounded-[24px] p-sm">
+<div class="flex justify-between items-start mb-xs">
+<div class="p-2 bg-primary/10 rounded-lg text-primary">
+<span class="material-symbols-outlined" data-icon="trending_up">trending_up</span>
+</div>
+<span class="text-primary font-bold text-label-sm bg-primary/5 px-2 py-1 rounded-full">+4.2%</span>
+</div>
+<h4 class="font-label-caps text-label-caps text-outline mb-1">Avg. Gross Margin</h4>
+<p class="font-headline-lg text-headline-lg font-bold">38.4%</p>
+<div class="w-full h-1 bg-surface-container mt-4 rounded-full overflow-hidden">
+<div class="h-full primary-gradient w-[38.4%]"></div>
+</div>
+</div>
+<div class="glass-card rounded-[24px] p-sm">
+<div class="flex justify-between items-start mb-xs">
+<div class="p-2 bg-secondary/10 rounded-lg text-secondary">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
+</div>
+<span class="text-error font-bold text-label-sm bg-error/5 px-2 py-1 rounded-full">-1.8%</span>
+</div>
+<h4 class="font-label-caps text-label-caps text-outline mb-1">Total COGS (HPP)</h4>
+<p class="font-headline-lg text-headline-lg font-bold">$1.24M</p>
+<p class="font-label-sm text-label-sm text-outline mt-2">vs $1.21M last month</p>
+</div>
+<div class="glass-card rounded-[24px] p-sm">
+<div class="flex justify-between items-start mb-xs">
+<div class="p-2 bg-tertiary/10 rounded-lg text-tertiary">
+<span class="material-symbols-outlined" data-icon="inventory">inventory</span>
+</div>
+</div>
+<h4 class="font-label-caps text-label-caps text-outline mb-1">Material Impact</h4>
+<p class="font-headline-lg text-headline-lg font-bold">62.0%</p>
+<p class="font-label-sm text-label-sm text-outline mt-2">Dominant cost driver</p>
+</div>
+<div class="glass-card rounded-[24px] p-sm overflow-hidden relative">
+<div class="relative z-10">
+<h4 class="font-label-caps text-label-caps text-outline mb-1">Profit Efficiency</h4>
+<p class="font-headline-lg text-headline-lg font-bold">92/100</p>
+<p class="font-label-sm text-label-sm text-primary mt-2">Optimized</p>
+</div>
+<div class="absolute right-[-20px] bottom-[-20px] opacity-20">
+<span class="material-symbols-outlined text-[100px]" data-icon="verified">verified</span>
+</div>
+</div>
+</div>
+<!-- Main Analytics Section -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
+<!-- Margin Trends Chart -->
+<div class="lg:col-span-2 glass-card rounded-[24px] p-lg flex flex-col min-h-[400px]">
+<div class="flex justify-between items-center mb-lg">
+<div>
+<h3 class="font-headline-md text-headline-md">Margin vs Cost Trends</h3>
+<p class="font-body-md text-body-md text-outline">Real-time analysis of operating performance</p>
+</div>
+<div class="flex gap-4">
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 rounded-full primary-gradient"></div>
+<span class="font-label-sm text-label-sm text-outline">Margin</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-secondary"></div>
+<span class="font-label-sm text-label-sm text-outline">Labor</span>
+</div>
+</div>
+</div>
+<div class="flex-1 flex items-end gap-6 relative">
+<!-- Fake Chart Grid Lines -->
+<div class="absolute inset-0 flex flex-col justify-between py-2 pointer-events-none">
+<div class="border-t border-outline-variant/30 w-full"></div>
+<div class="border-t border-outline-variant/30 w-full"></div>
+<div class="border-t border-outline-variant/30 w-full"></div>
+<div class="border-t border-outline-variant/30 w-full"></div>
+</div>
+<!-- Bars -->
+<div class="flex-1 flex flex-col justify-end items-center gap-1 group relative h-full">
+<div class="w-full primary-gradient rounded-t-lg animate-grow opacity-90 group-hover:opacity-100" style="height: 60%;"></div>
+<div class="w-full bg-secondary rounded-t-lg animate-grow opacity-70 group-hover:opacity-100" style="height: 20%;"></div>
+<span class="font-label-sm text-label-sm mt-2">Week 1</span>
+</div>
+<div class="flex-1 flex flex-col justify-end items-center gap-1 group relative h-full">
+<div class="w-full primary-gradient rounded-t-lg animate-grow opacity-90" style="height: 75%; animation-delay: 0.1s;"></div>
+<div class="w-full bg-secondary rounded-t-lg animate-grow opacity-70" style="height: 15%; animation-delay: 0.1s;"></div>
+<span class="font-label-sm text-label-sm mt-2">Week 2</span>
+</div>
+<div class="flex-1 flex flex-col justify-end items-center gap-1 group relative h-full">
+<div class="w-full primary-gradient rounded-t-lg animate-grow opacity-90" style="height: 45%; animation-delay: 0.2s;"></div>
+<div class="w-full bg-secondary rounded-t-lg animate-grow opacity-70" style="height: 25%; animation-delay: 0.2s;"></div>
+<span class="font-label-sm text-label-sm mt-2">Week 3</span>
+</div>
+<div class="flex-1 flex flex-col justify-end items-center gap-1 group relative h-full">
+<div class="w-full primary-gradient rounded-t-lg animate-grow opacity-90" style="height: 85%; animation-delay: 0.3s;"></div>
+<div class="w-full bg-secondary rounded-t-lg animate-grow opacity-70" style="height: 10%; animation-delay: 0.3s;"></div>
+<span class="font-label-sm text-label-sm mt-2">Week 4</span>
+</div>
+</div>
+</div>
+<!-- Cost Breakdown Radial (Simulated) -->
+<div class="glass-card rounded-[24px] p-lg flex flex-col">
+<h3 class="font-headline-md text-headline-md mb-xs">Cost Drivers</h3>
+<p class="font-body-md text-body-md text-outline mb-lg">Breakdown of total production expense</p>
+<div class="flex-1 flex items-center justify-center relative">
+<!-- Radial Background Placeholder -->
+<div class="w-48 h-48 rounded-full border-[16px] border-surface-container relative flex items-center justify-center">
+<div class="absolute inset-[-16px] rounded-full border-[16px] border-primary border-r-transparent border-b-transparent rotate-[45deg]"></div>
+<div class="absolute inset-[-16px] rounded-full border-[16px] border-secondary border-l-transparent border-t-transparent border-b-transparent rotate-[220deg]"></div>
+<div class="text-center">
+<span class="font-label-caps text-label-caps text-outline block">Total</span>
+<span class="font-headline-lg text-headline-lg font-bold">$1.2M</span>
+</div>
+</div>
+</div>
+<div class="space-y-4 mt-lg">
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 rounded-full primary-gradient"></div>
+<span class="font-body-md text-body-md">Raw Materials</span>
+</div>
+<span class="font-body-md text-body-md font-bold">62%</span>
+</div>
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-secondary"></div>
+<span class="font-body-md text-body-md">Direct Labor</span>
+</div>
+<span class="font-body-md text-body-md font-bold">24%</span>
+</div>
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-tertiary"></div>
+<span class="font-body-md text-body-md">Overhead</span>
+</div>
+<span class="font-body-md text-body-md font-bold">14%</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Detailed Product Margin Table -->
+<div class="mt-lg glass-card rounded-[24px] overflow-hidden">
+<div class="px-lg py-sm border-b border-outline-variant bg-white/50 flex justify-between items-center">
+<h3 class="font-headline-md text-headline-md">Product Margin Breakdown</h3>
+<div class="flex gap-2">
+<button class="p-2 hover:bg-surface-container rounded-lg"><span class="material-symbols-outlined" data-icon="filter_list">filter_list</span></button>
+<button class="p-2 hover:bg-surface-container rounded-lg"><span class="material-symbols-outlined" data-icon="more_vert">more_vert</span></button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead class="bg-surface-container/50">
+<tr>
+<th class="px-lg py-4 font-label-caps text-label-caps text-outline">Product ID</th>
+<th class="px-lg py-4 font-label-caps text-label-caps text-outline">Product Name</th>
+<th class="px-lg py-4 font-label-caps text-label-caps text-outline text-right">Unit HPP</th>
+<th class="px-lg py-4 font-label-caps text-label-caps text-outline text-right">Sales Price</th>
+<th class="px-lg py-4 font-label-caps text-label-caps text-outline text-right">Margin %</th>
+<th class="px-lg py-4 font-label-caps text-label-caps text-outline">Status</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/30">
+<tr class="hover:bg-primary/5 transition-colors group">
+<td class="px-lg py-4 font-label-sm text-label-sm font-bold">PRD-092-X</td>
+<td class="px-lg py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-surface-container overflow-hidden">
+<img alt="Product" data-alt="High quality industrial macro photography of a precisely machined metal component with a matte emerald finish, soft cinematic studio lighting, shallow depth of field, 8k resolution." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD96YnyM_i53gsT19TmLyBxW-sOa3tPOpxs017QhxfRjyTevgk7ylOHOYpUd1Fx_g5Z1XU8D5hN5rLfTa46BCybYkzWr2IuH6X5qtxWVvWD3k2jAPlcoLX1vWbHVtoTHmvjv4gX13f_bwDu1OjsbSygm42TLnQ4jKfqpn36Wwqr4J6uo1gbNitYVDfEAt-us4LCH20PSiEpLF4Uj9HiiAaAgPuDeKyrFze9VO8yyC2JWRplx7DkRWu0QuqI-Uyb3mLHdY_jgyyUi_qr"/>
+</div>
+<span class="font-body-md text-body-md font-semibold">Alloy Casting T-4</span>
+</div>
+</td>
+<td class="px-lg py-4 font-body-md text-body-md text-right">$412.50</td>
+<td class="px-lg py-4 font-body-md text-body-md text-right">$650.00</td>
+<td class="px-lg py-4 text-right">
+<span class="font-body-md text-body-md font-bold text-primary">36.5%</span>
+</td>
+<td class="px-lg py-4">
+<span class="px-3 py-1 bg-primary/10 text-primary rounded-full font-label-sm text-label-sm">Healthy</span>
+</td>
+</tr>
+<tr class="hover:bg-primary/5 transition-colors">
+<td class="px-lg py-4 font-label-sm text-label-sm font-bold">PRD-011-Y</td>
+<td class="px-lg py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-surface-container overflow-hidden">
+<img alt="Product" data-alt="Close-up of a sophisticated electronic circuit board with glowing seafoam LED indicators, modern industrial design, high-key lighting, professional laboratory setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDA9Q_mNNWitJ_mPyykWrDRqCAvPCK-RVaUZmvw9LIebu4P3I7SBn9P_P68OsTguxo8pW-zievj4nmMK-XFelD30tXa7SYNCx8pn74-6b8UJ7fcFJQdpN31heun5bJVfDRRJ6MgGI9eyV7CtK-eKLG9et4bKZdohLrZ-AkDOGFPYkz0DBzn4Gt3MCYl3aYzH-qyvXpW6RJCYtWGmgvjq4uNrTx6C--PAxCQ1kW5fyv6srfocWhsAOzWQY21WSSg7-MUSidThVP9STTa"/>
+</div>
+<span class="font-body-md text-body-md font-semibold">Control Module V2</span>
+</div>
+</td>
+<td class="px-lg py-4 font-body-md text-body-md text-right">$89.20</td>
+<td class="px-lg py-4 font-body-md text-body-md text-right">$110.00</td>
+<td class="px-lg py-4 text-right">
+<span class="font-body-md text-body-md font-bold text-secondary">18.9%</span>
+</td>
+<td class="px-lg py-4">
+<span class="px-3 py-1 bg-secondary/10 text-secondary rounded-full font-label-sm text-label-sm">Review Required</span>
+</td>
+</tr>
+<tr class="hover:bg-primary/5 transition-colors">
+<td class="px-lg py-4 font-label-sm text-label-sm font-bold">PRD-884-Z</td>
+<td class="px-lg py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-surface-container overflow-hidden">
+<img alt="Product" data-alt="Abstract rendering of high-performance polymer filaments in a vibrant emerald green, flowing organically, luminous lighting effect, minimalist industrial aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCfTM4aP-nS3s-h4yyihR9VHElq_TkBqJcc3TxKNsqwMEreNwumC1MUwMcCl5gVKZU2Cnp89HsIMgxfxwyqyU4AX37r_mwwvsDg4NhBZFA5ekKThHRR1rlF13d2UifsTVFnJOA3YMl2ZG5FsO7uUWNm9ICN8cgH1XIEhi_Qm_ZT_x-Xdy89UH9zU3ZxjITvsJCOvXNcPAs8e04_EyOSER5bv2X67r_fLanRb3mQ89Pzg2EXiJLMHgzLSu3gvLVXl-AT8HwfqsHp1iH2"/>
+</div>
+<span class="font-body-md text-body-md font-semibold">High-Tensile Fiber 10m</span>
+</div>
+</td>
+<td class="px-lg py-4 font-body-md text-body-md text-right">$12.40</td>
+<td class="px-lg py-4 font-body-md text-body-md text-right">$24.00</td>
+<td class="px-lg py-4 text-right">
+<span class="font-body-md text-body-md font-bold text-primary">48.3%</span>
+</td>
+<td class="px-lg py-4">
+<span class="px-3 py-1 bg-primary/10 text-primary rounded-full font-label-sm text-label-sm">High Yield</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="px-lg py-4 bg-surface-container/30 flex justify-between items-center">
+<span class="font-body-md text-body-md text-outline">Showing 3 of 142 items</span>
+<div class="flex gap-2">
+<button class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant hover:bg-white transition-colors">
+<span class="material-symbols-outlined text-[18px]" data-icon="chevron_left">chevron_left</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center rounded bg-primary text-white font-bold text-label-sm">1</button>
+<button class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant hover:bg-white transition-colors">
+<span class="material-symbols-outlined text-[18px]" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+<!-- Micro-interaction Scripts -->
+<script>
+        // Simple hover effect for chart bars
+        document.querySelectorAll('.animate-grow').forEach(bar => {
+            bar.addEventListener('mouseover', function() {
+                this.style.filter = 'brightness(1.1)';
+            });
+            bar.addEventListener('mouseout', function() {
+                this.style.filter = 'none';
+            });
+        });
+
+        // Tab simulation
+        const tabs = document.querySelectorAll('nav a');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', (e) => {
+                tabs.forEach(t => {
+                    t.classList.remove('bg-secondary-container', 'text-on-secondary-container', 'font-bold', 'translate-x-1');
+                    t.classList.add('text-on-surface-variant', 'hover:bg-surface-container-high');
+                });
+                tab.classList.add('bg-secondary-container', 'text-on-secondary-container', 'font-bold', 'translate-x-1');
+                tab.classList.remove('text-on-surface-variant', 'hover:bg-surface-container-high');
+            });
+        });
+    </script>
+</body></html>

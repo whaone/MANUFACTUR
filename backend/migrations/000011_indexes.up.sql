@@ -1,0 +1,12 @@
+CREATE INDEX idx_stock_mov_item     ON stock_movements(item_id, warehouse_id, created_at DESC);
+CREATE INDEX idx_stock_mov_ws       ON stock_movements(workspace_id, created_at DESC);
+CREATE INDEX idx_batches_fifo       ON material_batches(material_id, warehouse_id, received_at ASC);
+CREATE INDEX idx_variant_barcode    ON product_variants(barcode);
+CREATE INDEX idx_material_barcode   ON materials(barcode);
+CREATE INDEX idx_materials_ws       ON materials(workspace_id);
+CREATE INDEX idx_products_ws        ON products(workspace_id);
+CREATE INDEX idx_prod_orders_ws     ON production_orders(workspace_id, status);
+CREATE INDEX idx_po_ws              ON purchase_orders(workspace_id, status);
+CREATE INDEX idx_suppliers_ws       ON suppliers(workspace_id);
+CREATE INDEX idx_branches_ws        ON branches(workspace_id);
+CREATE INDEX idx_warehouses_branch  ON warehouses(branch_id);

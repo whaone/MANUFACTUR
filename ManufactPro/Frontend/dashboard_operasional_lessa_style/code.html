@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MFG OS - Production Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">tailwind.config = {darkMode: "class", theme: {extend: {colors: {outline: "#717972", "primary-fixed": "#7efabd", "on-background": "#1b1c1b", "secondary-fixed": "#ffdbc8", "primary-fixed-dim": "#60dda2", "surface-container-lowest": "#ffffff", "secondary-container": "#fe852b", "on-secondary-container": "#632c00", "on-primary": "#ffffff", "surface-container": "#efeeeb", "tertiary-fixed": "#dbe4e1", background: "#fbf9f7", "surface-variant": "#e4e2e0", "on-error": "#ffffff", "on-surface": "#1b1c1b", "surface-bright": "#fbf9f7", "tertiary-fixed-dim": "#bfc8c5", "on-tertiary-container": "#f6fffa", error: "#ba1a1a", "on-surface-variant": "#414942", "surface-container-high": "#e9e8e6", "on-secondary": "#ffffff", "surface-dim": "#dbdad8", "inverse-on-surface": "#f2f0ee", "on-tertiary-fixed-variant": "#404946", "primary-container": "#00885a", "inverse-surface": "#30312f", "on-secondary-fixed-variant": "#743400", "surface-container-highest": "#e4e2e0", "on-primary-container": "#000703", "surface-tint": "#006c47", "outline-variant": "#c0c9c0", primary: "#006c47", tertiary: "#555e5b", "surface-container-low": "#f5f3f1", "inverse-primary": "#60dda2", "on-secondary-fixed": "#321300", "secondary-fixed-dim": "#ffb68a", "on-tertiary": "#ffffff", "tertiary-container": "#6e7673", "error-container": "#ffdad6", secondary: "#994700", surface: "#fbf9f7", "on-primary-fixed-variant": "#005235", "on-error-container": "#93000a", "on-primary-fixed": "#002113", "on-tertiary-fixed": "#151d1b", "inventory-amber": "#f59e0b", "status-success": "#10b981", "status-critical": "#ef4444"}, borderRadius: {DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", full: "9999px"}, spacing: {sm: "16px", gutter: "24px", md: "24px", base: "4px", "container-margin": "32px", xs: "8px", xl: "48px", lg: "32px"}, fontFamily: {"label-sm": ["Inter"], "body-md": ["Inter"], "headline-md": ["Inter"], "body-lg": ["Inter"], "headline-xl": ["Inter"], "headline-lg": ["Inter"], "headline-lg-mobile": ["Inter"], "data-table": ["Inter"], "label-caps": ["Inter"], "code-sm": ["JetBrains Mono"], "body-sm": ["Inter"], headline: ["Inter"], display: ["Inter"], body: ["Inter"], label: ["Inter"]}, fontSize: {"label-sm": ["12px", {lineHeight: "1", letterSpacing: "0.05em", fontWeight: "600"}], "body-md": ["14px", {lineHeight: "1.5", letterSpacing: "0em", fontWeight: "400"}], "headline-md": ["20px", {lineHeight: "1.4", letterSpacing: "0.01em", fontWeight: "600"}], "body-lg": ["16px", {lineHeight: "1.6", letterSpacing: "0em", fontWeight: "400"}], "headline-xl": ["32px", {lineHeight: "1.2", letterSpacing: "-0.02em", fontWeight: "700"}], "headline-lg": ["24px", {lineHeight: "1.3", letterSpacing: "-0.01em", fontWeight: "600"}], "headline-lg-mobile": ["22px", {lineHeight: "1.3", fontWeight: "600"}], "data-table": ["13px", {lineHeight: "18px", fontWeight: "400"}], "label-caps": ["11px", {lineHeight: "16px", letterSpacing: "0.05em", fontWeight: "700"}], "code-sm": ["12px", {lineHeight: "16px", fontWeight: "500"}], "body-sm": ["12px", {lineHeight: "16px", fontWeight: "400"}]}, boxShadow: {soft: "0 10px 40px -10px rgba(0,0,0,0.08)", glow: "0 0 20px rgba(77, 130, 97, 0.4)"}}}};</script>
+</head>
+<body class="bg-background text-on-surface font-body-md text-body-md overflow-x-hidden min-h-screen flex flex-col md:flex-row">
+<!-- Mobile TopAppBar -->
+<header class="md:hidden bg-surface-container-lowest/80 backdrop-blur-md w-full top-0 h-16 border-b border-surface-variant flex justify-between items-center px-container-margin shrink-0 z-50">
+<div class="font-headline-lg-mobile text-headline-lg-mobile font-bold tracking-tight text-primary">
+            MFG OS
+        </div>
+<div class="flex items-center gap-md text-primary">
+<span class="material-symbols-outlined" data-weight="fill" style="font-variation-settings: 'FILL' 1;">notifications</span>
+<span class="material-symbols-outlined text-status-success animate-pulse" data-weight="fill" style="font-variation-settings: 'FILL' 1;">cloud_done</span>
+<span class="material-symbols-outlined">account_circle</span>
+</div>
+</header>
+<!-- SideNavBar (Web) -->
+<nav class="hidden md:flex w-64 h-screen fixed left-0 top-0 bg-surface-container-lowest/80 backdrop-blur-md border-r border-surface-variant flex-col py-md px-md z-50">
+<!-- Header -->
+<div class="mb-md px-sm py-md">
+<div class="flex items-center gap-xs mb-xs">
+<span class="material-symbols-outlined text-secondary-container text-[28px]" data-weight="fill" style="font-variation-settings: 'FILL' 1;">precision_manufacturing</span>
+<span class="font-headline-md text-headline-md font-black text-on-surface tracking-tight">MFG OS</span>
+</div>
+<div class="font-code-sm text-code-sm text-outline flex items-center gap-base">
+<span class="w-2 h-2 rounded-full bg-status-success animate-pulse"></span>
+                v2.4.1 Online
+            </div>
+</div>
+<!-- Main Navigation -->
+<div class="flex-1 overflow-y-auto pt-xs flex flex-col gap-xs">
+<a class="flex items-center gap-md px-md py-sm bg-primary-container text-on-primary shadow-glow rounded-2xl font-bold translate-x-1 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="factory">factory</span>
+<span class="font-body-md text-body-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-colors rounded-2xl" href="#">
+<span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+<span class="font-body-md text-body-md">Product</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-colors rounded-2xl" href="#">
+<span class="material-symbols-outlined" data-icon="shopping_cart">shopping_cart</span>
+<span class="font-body-md text-body-md">Sale</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-colors rounded-2xl" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span class="font-body-md text-body-md">Review</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-colors rounded-2xl" href="#">
+<span class="material-symbols-outlined" data-icon="database">database</span>
+<span class="font-body-md text-body-md">Chat</span>
+</a>
+</div>
+<!-- CTA & Footer -->
+<div class="mt-auto pt-md flex flex-col gap-md">
+<button class="w-full py-sm px-md bg-primary-container text-on-primary font-body-md text-body-md font-bold rounded-2xl flex items-center justify-center gap-sm hover:opacity-90 transition-opacity shadow-glow">
+<span class="material-symbols-outlined text-[20px]">download</span>
+                Download report
+            </button>
+<div class="flex items-center gap-md px-md py-xs text-status-success font-code-sm text-code-sm bg-status-success/10 rounded-2xl">
+<span class="material-symbols-outlined text-[16px] animate-spin-slow" data-icon="sync">sync</span>
+<span>Offline Sync Active</span>
+</div>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-1 md:ml-64 p-md md:p-container-margin max-w-[1440px] mx-auto w-full">
+<!-- TopAppBar equivalent for Desktop (Header area) -->
+<div class="hidden md:flex justify-between items-center mb-container-margin">
+<div>
+<h1 class="font-headline-xl text-headline-xl text-on-surface font-bold">Good morning Liz <span class="text-3xl">👋</span></h1>
+<p class="font-body-md text-body-md text-outline mt-xs">Time to rise up for today's</p>
+</div>
+<div class="flex items-center gap-md">
+<div class="relative">
+<span class="material-symbols-outlined text-outline hover:bg-surface-container-low p-sm rounded-full cursor-pointer transition-colors" data-icon="notifications">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-primary-container rounded-full"></span>
+</div>
+<div class="flex items-center gap-md border-l border-surface-variant pl-md">
+<div class="text-right">
+<div class="font-body-sm text-body-sm text-outline">Your balance</div>
+<div class="font-headline-md text-headline-md text-primary-container font-bold">$566.55</div>
+</div>
+<img alt="Profile" class="w-10 h-10 rounded-full border border-surface-variant" data-alt="A close-up headshot of a focused manufacturing manager wearing a pristine white hardhat and safety glasses, set against a blurred background of a modern, brightly lit industrial facility with sleek metal machinery. The lighting is crisp and cool, emphasizing a professional, high-stakes industrial environment with a clean, light-mode aesthetic. High-resolution, realistic style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuArIt2mUchFsWwkfZ6CSn9NwFbCPeYTi1bZ5zO7cig2PBRuUUjjXxphawgqBevXxQCHURlwu4okH-4QgI9-z-b8ml2NNg4122PwOd-5Uh9M_oRpcUIT2aAVC-zCooCnYqAmkU591zr-UuB-RWYk6C03-wzqZXSkNrjrhV4x8h2-O8YXibUl01N-iEmYiKMnuZqop_pSLLH2sWh0p4F8zNAvM7ow04IjyrSmw6mAzw0OfB9ZsCZ5nydj--qG8BcPRukihPKwqsI3he-2"/>
+<span class="material-symbols-outlined text-outline cursor-pointer">expand_more</span>
+</div>
+</div>
+</div>
+<div class="md:hidden mb-md">
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface font-bold">Dashboard</h1>
+</div>
+<!-- Dashboard Grid -->
+<div class="bg-surface-container-lowest rounded-[32px] p-container-margin shadow-soft">
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
+<!-- Key Metrics (Bento Style) -->
+<div class="md:col-span-12 lg:col-span-12 grid grid-cols-1 sm:grid-cols-3 gap-gutter bg-primary-container rounded-2xl p-container-margin shadow-glow text-on-primary">
+<!-- Metric Card 1 -->
+<div class="flex flex-col gap-sm border-r border-on-primary/20 pr-gutter">
+<div class="flex items-center gap-sm">
+<div class="p-sm bg-on-primary/10 rounded-full">
+<span class="material-symbols-outlined text-on-primary" data-icon="precision_manufacturing">precision_manufacturing</span>
+</div>
+<span class="font-body-md text-body-md text-on-primary/80">Active Orders</span>
+</div>
+<div class="font-headline-xl text-headline-xl font-bold">142k</div>
+</div>
+<!-- Metric Card 2 -->
+<div class="flex flex-col gap-sm border-r border-on-primary/20 px-gutter">
+<div class="flex items-center gap-sm">
+<div class="p-sm bg-on-primary/10 rounded-full">
+<span class="material-symbols-outlined text-on-primary" data-icon="check_circle">check_circle</span>
+</div>
+<span class="font-body-md text-body-md text-on-primary/80">Completed Today</span>
+</div>
+<div class="font-headline-xl text-headline-xl font-bold">284k</div>
+</div>
+<!-- Metric Card 3 -->
+<div class="flex flex-col gap-sm pl-gutter">
+<div class="flex items-center gap-sm">
+<div class="p-sm bg-on-primary/10 rounded-full">
+<span class="material-symbols-outlined text-on-primary" data-icon="donut_large">donut_large</span>
+</div>
+<span class="font-body-md text-body-md text-on-primary/80">Line Utilization</span>
+</div>
+<div class="font-headline-xl text-headline-xl font-bold">85%</div>
+</div>
+</div>
+<!-- Production Status Chart Placeholder -->
+<div class="md:col-span-12 lg:col-span-8 bg-surface-container-lowest border border-surface-variant rounded-2xl p-container-margin shadow-sm flex flex-col">
+<div class="flex justify-between items-start mb-md">
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface font-bold">Summary Revenue</h2>
+<p class="font-body-sm text-body-sm text-outline mt-base">Last update last week</p>
+</div>
+<div class="text-right">
+<div class="font-body-sm text-body-sm text-status-success font-bold flex items-center gap-base justify-end"><span class="material-symbols-outlined text-[16px]">arrow_upward</span> 23.22%</div>
+<div class="font-body-sm text-body-sm text-status-critical font-bold flex items-center gap-base justify-end mt-base"><span class="material-symbols-outlined text-[16px]">arrow_downward</span> 3.31%</div>
+</div>
+</div>
+<div class="flex-1 flex items-end justify-between relative min-h-[200px] pt-md">
+<!-- Placeholder for actual chart -->
+<div class="absolute inset-0 flex flex-col justify-between py-md pointer-events-none">
+<div class="border-b border-surface-variant w-full h-0"></div>
+<div class="border-b border-surface-variant w-full h-0"></div>
+<div class="border-b border-surface-variant w-full h-0"></div>
+<div class="border-b border-surface-variant w-full h-0"></div>
+<div class="border-b border-surface-variant w-full h-0"></div>
+</div>
+<svg class="w-full h-full text-primary-container" preserveaspectratio="none" viewbox="0 0 100 100">
+<path d="M0,80 Q20,80 30,50 T60,80 T100,20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" style="filter: drop-shadow(0px 10px 10px rgba(77, 130, 97, 0.4));"></path>
+</svg>
+</div>
+<div class="flex justify-between mt-md font-body-sm text-body-sm text-outline">
+<span>2 Dec</span>
+<span>3 Dec</span>
+<span>4 Dec</span>
+<span class="text-primary-container font-bold">5 Dec</span>
+<span>6 Dec</span>
+<span>7 Dec</span>
+</div>
+</div>
+<!-- Critical Stock Alerts Table -->
+<div class="md:col-span-12 lg:col-span-4 flex flex-col gap-gutter h-full">
+<div class="bg-secondary-container rounded-2xl p-container-margin shadow-sm flex flex-col justify-center relative overflow-hidden">
+<div class="relative z-10">
+<h2 class="font-headline-md text-headline-md text-on-secondary-container font-bold mb-xs">Need more information?</h2>
+<p class="font-body-sm text-body-sm text-on-secondary-container/80 mb-md">Present information in a visually appealing way</p>
+<button class="bg-surface-container-lowest text-on-surface font-body-sm text-body-sm font-bold py-xs px-md rounded-full w-max flex items-center gap-xs">See more <span class="material-symbols-outlined text-[16px]">chevron_right</span></button>
+</div>
+<div class="absolute right-0 top-0 bottom-0 w-1/2 bg-gradient-to-l from-transparent to-secondary-container mix-blend-overlay opacity-50"></div>
+</div>
+<div class="bg-surface-container-lowest border border-surface-variant rounded-2xl p-container-margin shadow-sm flex-1 flex flex-col">
+<div class="flex justify-between items-center mb-md">
+<h2 class="font-headline-md text-headline-md text-on-surface font-bold">Critical Stock Alerts</h2>
+<span class="material-symbols-outlined text-outline cursor-pointer">chevron_right</span>
+</div>
+<div class="overflow-x-auto flex-1">
+<table class="w-full text-left border-collapse">
+<tbody class="font-data-table text-data-table">
+<tr class="border-b border-surface-variant hover:bg-surface-container-low transition-colors">
+<td class="py-sm font-code-sm text-code-sm text-outline">RM-4921-A</td>
+<td class="py-sm text-on-surface font-medium">Aluminum Sheet</td>
+<td class="py-sm text-right text-status-critical font-bold">14</td>
+</tr>
+<tr class="border-b border-surface-variant hover:bg-surface-container-low transition-colors">
+<td class="py-sm font-code-sm text-code-sm text-outline">CM-1099-X</td>
+<td class="py-sm text-on-surface font-medium">Industrial Adhesive B</td>
+<td class="py-sm text-right text-status-critical font-bold">2</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="py-sm font-code-sm text-code-sm text-outline">PT-8832-L</td>
+<td class="py-sm text-on-surface font-medium">Hex Bolts M8x20</td>
+<td class="py-sm text-right text-inventory-amber font-bold">450</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<style>
+        /* Custom scrollbar for data tables to maintain clean aesthetic */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #e4e2e0;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #c0c9c0;
+        }
+        .animate-spin-slow {
+            animation: spin 3s linear infinite;
+        }
+    </style>
+</body></html>

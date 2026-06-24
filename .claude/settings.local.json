@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(/home/whaone17/go/bin/go build *)",
+      "Bash(grep -n 'api\\\\.\\\\|$state\\\\|mock\\\\|hardcode' ManufactPro/Frontend/ManufactPro-UI/src/lib/routes/Planning.svelte)",
+      "Bash(bash scripts/test_phases.sh all)",
+      "Bash(awk '/^phase6\\\\\\(\\\\\\)/,/^}/' scripts/test_phases.sh)",
+      "Bash(npm run *)",
+      "Bash(awk '/^phase3\\\\\\(\\\\\\)/,/^}/' scripts/test_phases.sh)",
+      "Bash(/home/whaone17/go/bin/go run *)",
+      "Bash(go version *)"
+    ]
+  }
+}
