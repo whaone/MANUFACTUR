@@ -34,6 +34,16 @@ type TrendItem struct {
 	OrderCount  int     `json:"order_count"`
 }
 
+// computeMargin returns absolute margin and margin percentage for one unit.
+// Percentage is 0 when sellPrice is non-positive (avoids divide-by-zero). Pure.
+func computeMargin(sellPrice, hppPerUnit float64) (margin, marginPct float64) {
+	margin = sellPrice - hppPerUnit
+	if sellPrice > 0 {
+		marginPct = margin / sellPrice * 100
+	}
+	return margin, marginPct
+}
+
 func Dashboard(ctx context.Context, workspaceID uuid.UUID) (*DashboardData, error) {
 	var d DashboardData
 
@@ -123,10 +133,7 @@ func HppMargin(ctx context.Context, workspaceID uuid.UUID) ([]HppMarginItem, err
 		); err != nil {
 			return nil, err
 		}
-		it.Margin = it.SellPrice - it.HppPerUnit
-		if it.SellPrice > 0 {
-			it.MarginPct = it.Margin / it.SellPrice * 100
-		}
+		it.Margin, it.MarginPct = computeMargin(it.SellPrice, it.HppPerUnit)
 		items = append(items, it)
 	}
 	if items == nil {

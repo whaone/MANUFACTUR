@@ -208,14 +208,9 @@ func Start(ctx context.Context, workspaceID, userID, orderID uuid.UUID) (*Order,
 			return nil, err
 		}
 
-		type batch struct {
-			id           uuid.UUID
-			qtyRemaining float64
-			unitCost     float64
-		}
-		var batches []batch
+		var batches []fifoBatch
 		for batchRows.Next() {
-			var bt batch
+			var bt fifoBatch
 			if err := batchRows.Scan(&bt.id, &bt.qtyRemaining, &bt.unitCost); err != nil {
 				batchRows.Close()
 				return nil, err
@@ -224,20 +219,17 @@ func Start(ctx context.Context, workspaceID, userID, orderID uuid.UUID) (*Order,
 		}
 		batchRows.Close()
 
-		for _, bt := range batches {
-			if needed <= 0 {
-				break
-			}
-			deduct := bt.qtyRemaining
-			if deduct > needed {
-				deduct = needed
-			}
-			needed -= deduct
-			totalCost += deduct * bt.unitCost
+		deductions, cost, shortfall := allocateFIFO(batches, needed)
+		// Not enough stock across all FIFO batches → abort whole order (rollback via defer).
+		if shortfall > 0 {
+			return nil, fmt.Errorf("insufficient stock for material %s: short %.4f", b.materialID, shortfall)
+		}
+		totalCost += cost
 
+		for _, d := range deductions {
 			if _, err = tx.Exec(ctx,
 				`UPDATE material_batches SET qty_remaining = qty_remaining - $1 WHERE id=$2`,
-				deduct, bt.id,
+				d.deduct, d.batchID,
 			); err != nil {
 				return nil, fmt.Errorf("deduct batch: %w", err)
 			}
@@ -245,15 +237,10 @@ func Start(ctx context.Context, workspaceID, userID, orderID uuid.UUID) (*Order,
 				`INSERT INTO stock_movements
 					(workspace_id, warehouse_id, item_type, item_id, qty, movement_type, reference_type, reference_id, unit_cost, created_by)
 				VALUES ($1,$2,'material',$3,$4,'OUT_PRODUCTION'::movement_type,'production_order',$5,$6,$7)`,
-				workspaceID, warehouseID, b.materialID, -deduct, orderID, bt.unitCost, userID,
+				workspaceID, warehouseID, b.materialID, -d.deduct, orderID, d.unitCost, userID,
 			); err != nil {
 				return nil, fmt.Errorf("insert OUT_PRODUCTION: %w", err)
 			}
-		}
-
-		// Not enough stock across all FIFO batches → abort whole order (rollback via defer).
-		if needed > 1e-9 {
-			return nil, fmt.Errorf("insufficient stock for material %s: short %.4f", b.materialID, needed)
 		}
 	}
 
