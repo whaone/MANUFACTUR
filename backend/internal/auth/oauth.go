@@ -215,7 +215,9 @@ func handleGithubCallback(w http.ResponseWriter, r *http.Request) {
 	if resp2 != nil {
 		defer resp2.Body.Close()
 		body2, _ := io.ReadAll(resp2.Body)
-		var profile struct{ Name string `json:"name"` }
+		var profile struct {
+			Name string `json:"name"`
+		}
 		json.Unmarshal(body2, &profile)
 		if profile.Name != "" {
 			name = profile.Name

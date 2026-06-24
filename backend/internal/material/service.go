@@ -11,18 +11,18 @@ import (
 )
 
 type Material struct {
-	ID          uuid.UUID  `json:"id"`
-	WorkspaceID uuid.UUID  `json:"workspace_id"`
-	SKU         string     `json:"sku"`
-	Name        string     `json:"name"`
-	Unit        string     `json:"unit"`
-	Category    string     `json:"category"`
-	MinStock    float64    `json:"min_stock"`
-	Barcode     string     `json:"barcode"`
-	ImageURL    string     `json:"image_url"`
-	IsActive    bool       `json:"is_active"`
-	CreatedAt   time.Time  `json:"created_at"`
-	UpdatedAt   time.Time  `json:"updated_at"`
+	ID          uuid.UUID `json:"id"`
+	WorkspaceID uuid.UUID `json:"workspace_id"`
+	SKU         string    `json:"sku"`
+	Name        string    `json:"name"`
+	Unit        string    `json:"unit"`
+	Category    string    `json:"category"`
+	MinStock    float64   `json:"min_stock"`
+	Barcode     string    `json:"barcode"`
+	ImageURL    string    `json:"image_url"`
+	IsActive    bool      `json:"is_active"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }
 
 type CreateInput struct {
@@ -113,14 +113,30 @@ func Update(ctx context.Context, workspaceID, id uuid.UUID, in UpdateInput) (*Ma
 	if err != nil {
 		return nil, err
 	}
-	if in.SKU != nil { cur.SKU = *in.SKU }
-	if in.Name != nil { cur.Name = *in.Name }
-	if in.Unit != nil { cur.Unit = *in.Unit }
-	if in.Category != nil { cur.Category = *in.Category }
-	if in.MinStock != nil { cur.MinStock = *in.MinStock }
-	if in.Barcode != nil { cur.Barcode = *in.Barcode }
-	if in.ImageURL != nil { cur.ImageURL = *in.ImageURL }
-	if in.IsActive != nil { cur.IsActive = *in.IsActive }
+	if in.SKU != nil {
+		cur.SKU = *in.SKU
+	}
+	if in.Name != nil {
+		cur.Name = *in.Name
+	}
+	if in.Unit != nil {
+		cur.Unit = *in.Unit
+	}
+	if in.Category != nil {
+		cur.Category = *in.Category
+	}
+	if in.MinStock != nil {
+		cur.MinStock = *in.MinStock
+	}
+	if in.Barcode != nil {
+		cur.Barcode = *in.Barcode
+	}
+	if in.ImageURL != nil {
+		cur.ImageURL = *in.ImageURL
+	}
+	if in.IsActive != nil {
+		cur.IsActive = *in.IsActive
+	}
 
 	var m Material
 	err = db.Pool.QueryRow(ctx,

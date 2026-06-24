@@ -9,10 +9,10 @@ import (
 )
 
 type DashboardData struct {
-	CompletedOrders  int     `json:"completed_orders"`
-	TotalQtyProduced float64 `json:"total_qty_produced"`
-	ReceivedPOs      int     `json:"received_pos"`
-	StockValue       float64 `json:"stock_value"`
+	CompletedOrders   int     `json:"completed_orders"`
+	TotalQtyProduced  float64 `json:"total_qty_produced"`
+	ReceivedPOs       int     `json:"received_pos"`
+	StockValue        float64 `json:"stock_value"`
 	MaterialCostMonth float64 `json:"material_cost_month"`
 }
 

@@ -95,11 +95,21 @@ func Update(ctx context.Context, workspaceID, id uuid.UUID, in UpdateInput) (*Su
 	if err != nil {
 		return nil, err
 	}
-	if in.Name != nil { cur.Name = *in.Name }
-	if in.Contact != nil { cur.Contact = *in.Contact }
-	if in.Email != nil { cur.Email = *in.Email }
-	if in.Phone != nil { cur.Phone = *in.Phone }
-	if in.PaymentTerm != nil { cur.PaymentTerm = *in.PaymentTerm }
+	if in.Name != nil {
+		cur.Name = *in.Name
+	}
+	if in.Contact != nil {
+		cur.Contact = *in.Contact
+	}
+	if in.Email != nil {
+		cur.Email = *in.Email
+	}
+	if in.Phone != nil {
+		cur.Phone = *in.Phone
+	}
+	if in.PaymentTerm != nil {
+		cur.PaymentTerm = *in.PaymentTerm
+	}
 
 	return scan(db.Pool.QueryRow(ctx,
 		`UPDATE suppliers SET name=$1,contact=$2,email=$3,phone=$4,payment_term=$5

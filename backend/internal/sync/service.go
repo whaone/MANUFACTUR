@@ -28,8 +28,8 @@ type Request struct {
 
 // Result reports the outcome of one item so the client can reconcile its queue.
 type Result struct {
-	ID       string `json:"id"`               // client queue id (echoed back)
-	Status   string `json:"status"`           // synced | failed
+	ID       string `json:"id"`     // client queue id (echoed back)
+	Status   string `json:"status"` // synced | failed
 	ServerID string `json:"server_id,omitempty"`
 	Error    string `json:"error,omitempty"`
 }
